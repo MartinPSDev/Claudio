@@ -39,25 +39,40 @@ claudio_kotlin/
 ├── app/
 │   └── src/main/
 │       ├── java/com/anthropic/claude/
+│       │   ├── agentchat/
+│       │   │   └── AgentChatDestination.kt
+│       │   ├── analytics/events/
+│       │   │   ├── AnalyticsEvent.kt
+│       │   │   └── PushEvents.kt
 │       │   ├── api/
 │       │   │   ├── account/
 │       │   │   │   ├── AccountProfile.kt
+│       │   │   │   ├── RavenType.kt
 │       │   │   │   └── SubscriptionLevel.kt
 │       │   │   ├── chat/
 │       │   │   │   ├── messages/
+│       │   │   │   │   ├── BellNoteDelta.kt
 │       │   │   │   │   ├── CompactionStatus.kt
 │       │   │   │   │   ├── CompletionMessage.kt
+│       │   │   │   │   ├── ContentBlock.kt
+│       │   │   │   │   ├── ContentBlockDelta.kt
+│       │   │   │   │   ├── McpAuthRequiredEvent.kt
 │       │   │   │   │   ├── MessageDelta.kt
 │       │   │   │   │   ├── MessageFlag.kt
-│       │   │   │   │   └── ThinkingSummary.kt
+│       │   │   │   │   ├── StreamEvent.kt
+│       │   │   │   │   ├── ThinkingSummary.kt
+│       │   │   │   │   └── UnknownContentBlock.kt
 │       │   │   │   ├── ChatFeedback.kt
 │       │   │   │   ├── ChatFeedbackType.kt
 │       │   │   │   ├── ChatMessage.kt
 │       │   │   │   ├── CreateChatRequest.kt
 │       │   │   │   ├── MessageAttachment.kt
 │       │   │   │   └── MessageSender.kt
-│       │   │   └── login/
-│       │   │       └── CodeConfiguration.kt
+│       │   │   ├── login/
+│       │   │   │   └── CodeConfiguration.kt
+│       │   │   └── mcp/
+│       │   │       ├── DirectoryServer.kt
+│       │   │       └── DirectoryServerType.kt
 │       │   ├── application/
 │       │   │   └── ClaudeApplication.kt
 │       │   ├── bell/
@@ -76,11 +91,22 @@ claudio_kotlin/
 │       │   │   ├── CCRPermissionActionWorker.kt
 │       │   │   ├── SessionReplyActionReceiver.kt
 │       │   │   └── SessionReplyActionWorker.kt
+│       │   ├── configs/flags/
+│       │   │   ├── AgentChatOnboardingConfig.kt
+│       │   │   ├── AgentChatWorkerTypesConfig.kt
+│       │   │   ├── FileUploadConfig.kt
+│       │   │   ├── OnboardingConfig.kt
+│       │   │   ├── StreamSmoothingConfig.kt
+│       │   │   └── UploadConfig.kt
+│       │   ├── connector/auth/
+│       │   │   └── McpAuthException.kt
 │       │   ├── conway/
 │       │   │   ├── AppForegroundDetector.kt
 │       │   │   ├── ConwayAppScreen.kt
 │       │   │   ├── ConwayScopeHolder.kt
 │       │   │   └── ConwayWakeWorker.kt
+│       │   ├── core/telemetry/
+│       │   │   └── SilentException.kt
 │       │   ├── deeplink/
 │       │   │   └── DeepLinkActivity.kt
 │       │   ├── firebase/fcm/
@@ -102,6 +128,8 @@ claudio_kotlin/
 │       │   │   └── AnthropicApiClient.kt
 │       │   ├── policy/
 │       │   │   └── PermissionsRationaleActivity.kt
+│       │   ├── settings/
+│       │   │   └── SettingsAppScreen.kt
 │       │   ├── types/strings/
 │       │   │   ├── DomainTypes.kt
 │       │   │   └── ModelId.kt
@@ -119,6 +147,8 @@ claudio_kotlin/
 │   └── libs.versions.toml     # Version catalog
 └── build.gradle.kts
 ```
+
+**Total: 69 Kotlin files across 24 packages** (as of last commit)
 
 ---
 
