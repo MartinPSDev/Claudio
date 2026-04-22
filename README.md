@@ -86,6 +86,11 @@ claudio_kotlin/
 │       │   │   └── BellModeService.kt
 │       │   ├── chat/
 │       │   │   └── MessageSseService.kt
+│       │   ├── chatlist/all/
+│       │   │   ├── bottomsheet/
+│       │   │   │   └── AllChatsListBottomSheetDestination.kt
+│       │   │   └── overlays/
+│       │   │       └── AllChatsListOverlay.kt
 │       │   ├── code/remote/notification/
 │       │   │   ├── CCRPermissionActionReceiver.kt
 │       │   │   ├── CCRPermissionActionWorker.kt
@@ -117,6 +122,11 @@ claudio_kotlin/
 │       │   │   ├── AssistantOverlayActivity.kt
 │       │   │   ├── IntentRouter.kt
 │       │   │   └── MainActivity.kt
+│       │   ├── mcpapps/transport/
+│       │   │   ├── HostCapabilities.kt
+│       │   │   ├── HostContext.kt
+│       │   │   ├── InitializeResult.kt
+│       │   │   └── JsonRpc.kt
 │       │   ├── model/
 │       │   │   └── IncomingPayload.kt
 │       │   ├── models/organization/
@@ -128,8 +138,17 @@ claudio_kotlin/
 │       │   │   └── AnthropicApiClient.kt
 │       │   ├── policy/
 │       │   │   └── PermissionsRationaleActivity.kt
+│       │   ├── project/details/
+│       │   │   ├── custominstructions/
+│       │   │   │   └── CustomInstructionsDialogRoute.kt
+│       │   │   ├── ProjectDetailsDialogDestination.kt
+│       │   │   └── ProjectDetailsScreenParams.kt
 │       │   ├── settings/
 │       │   │   └── SettingsAppScreen.kt
+│       │   ├── stt/repo/
+│       │   │   ├── api/
+│       │   │   │   └── STTApiMessage.kt
+│       │   │   └── SpeechToTextLanguageNotFoundException.kt
 │       │   ├── types/strings/
 │       │   │   ├── DomainTypes.kt
 │       │   │   └── ModelId.kt
@@ -148,7 +167,7 @@ claudio_kotlin/
 └── build.gradle.kts
 ```
 
-**Total: 69 Kotlin files across 24 packages** (as of last commit)
+**Total: 82 Kotlin files across 30 packages** (as of last commit)
 
 ---
 
