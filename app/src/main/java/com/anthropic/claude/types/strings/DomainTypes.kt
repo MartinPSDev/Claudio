@@ -49,3 +49,28 @@ value class EmailAddress(val value: String) {
 value class McpServerId(val value: String) {
     override fun toString(): String = value
 }
+
+@JvmInline
+value class DirectoryServerId(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class SessionId(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class ToolUseId(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class TaskId(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class ArtifactId(val value: String) {
+    override fun toString(): String = value
+}

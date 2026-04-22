@@ -9,5 +9,7 @@ enum class SubscriptionLevel {
     @SerialName("pro") PRO,
     @SerialName("team") TEAM,
     @SerialName("enterprise") ENTERPRISE,
-    @SerialName("raven") RAVEN,
+    @SerialName("raven_team") RAVEN_TEAM,
+    @SerialName("raven_enterprise") RAVEN_ENTERPRISE,
+    @SerialName("unknown") UNKNOWN,
 }
