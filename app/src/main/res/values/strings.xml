@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Claude Kotlin Replica</string>
+    <string name="incoming_title">Entrada detectada</string>
+    <string name="no_input">Sin contenido compartido todavía.</string>
+    <string name="voice_mode_notification_title">Voice mode is active</string>
+    <string name="tts_notification_title">Claude is speaking</string>
+    <string name="tts_notification_stop">Stop</string>
+</resources>
