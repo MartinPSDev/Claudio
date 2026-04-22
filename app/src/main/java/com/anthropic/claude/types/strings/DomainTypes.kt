@@ -74,3 +74,38 @@ value class TaskId(val value: String) {
 value class ArtifactId(val value: String) {
     override fun toString(): String = value
 }
+
+@JvmInline
+value class PublishedArtifactId(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class ArtifactIdentifier(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class SessionKey(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class ResearchTaskId(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class VoiceSessionId(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class ChatSnapshotId(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class ProjectDocId(val value: String) {
+    override fun toString(): String = value
+}
