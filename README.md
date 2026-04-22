@@ -39,14 +39,80 @@ claudio_kotlin/
 ├── app/
 │   └── src/main/
 │       ├── java/com/anthropic/claude/
-│       │   ├── api/            # API models and data classes
-│       │   ├── bell/           # Bell Mode service and TTS
-│       │   ├── deeplink/       # Deep link handling
-│       │   ├── mainactivity/   # Main UI entry points
-│       │   ├── models/         # Domain models and config types
-│       │   ├── networking/     # HTTP client (OkHttp)
-│       │   ├── types/          # Value classes and domain types
-│       │   └── ...
+│       │   ├── api/
+│       │   │   ├── account/
+│       │   │   │   ├── AccountProfile.kt
+│       │   │   │   └── SubscriptionLevel.kt
+│       │   │   ├── chat/
+│       │   │   │   ├── messages/
+│       │   │   │   │   ├── CompactionStatus.kt
+│       │   │   │   │   ├── CompletionMessage.kt
+│       │   │   │   │   ├── MessageDelta.kt
+│       │   │   │   │   ├── MessageFlag.kt
+│       │   │   │   │   └── ThinkingSummary.kt
+│       │   │   │   ├── ChatFeedback.kt
+│       │   │   │   ├── ChatFeedbackType.kt
+│       │   │   │   ├── ChatMessage.kt
+│       │   │   │   ├── CreateChatRequest.kt
+│       │   │   │   ├── MessageAttachment.kt
+│       │   │   │   └── MessageSender.kt
+│       │   │   └── login/
+│       │   │       └── CodeConfiguration.kt
+│       │   ├── application/
+│       │   │   └── ClaudeApplication.kt
+│       │   ├── bell/
+│       │   │   ├── assist/
+│       │   │   │   ├── ClaudeRecognitionService.kt
+│       │   │   │   ├── ClaudeVoiceInteractionService.kt
+│       │   │   │   ├── ClaudeVoiceInteractionSessionService.kt
+│       │   │   │   └── ClaudeVoiceSession.kt
+│       │   │   ├── tts/
+│       │   │   │   └── TTSPlaybackService.kt
+│       │   │   └── BellModeService.kt
+│       │   ├── chat/
+│       │   │   └── MessageSseService.kt
+│       │   ├── code/remote/notification/
+│       │   │   ├── CCRPermissionActionReceiver.kt
+│       │   │   ├── CCRPermissionActionWorker.kt
+│       │   │   ├── SessionReplyActionReceiver.kt
+│       │   │   └── SessionReplyActionWorker.kt
+│       │   ├── conway/
+│       │   │   ├── AppForegroundDetector.kt
+│       │   │   ├── ConwayAppScreen.kt
+│       │   │   ├── ConwayScopeHolder.kt
+│       │   │   └── ConwayWakeWorker.kt
+│       │   ├── deeplink/
+│       │   │   └── DeepLinkActivity.kt
+│       │   ├── firebase/fcm/
+│       │   │   └── AnthropicFirebaseMessagingService.kt
+│       │   ├── login/
+│       │   │   └── MagicLinkSentConfig.kt
+│       │   ├── mainactivity/
+│       │   │   ├── AssistantOverlayActivity.kt
+│       │   │   ├── IntentRouter.kt
+│       │   │   └── MainActivity.kt
+│       │   ├── model/
+│       │   │   └── IncomingPayload.kt
+│       │   ├── models/organization/
+│       │   │   ├── configtypes/
+│       │   │   │   ├── AvailableModelsConfig.kt
+│       │   │   │   └── ModelFallbacksConfig.kt
+│       │   │   └── DefaultModelConfig.kt
+│       │   ├── networking/
+│       │   │   └── AnthropicApiClient.kt
+│       │   ├── policy/
+│       │   │   └── PermissionsRationaleActivity.kt
+│       │   ├── types/strings/
+│       │   │   ├── DomainTypes.kt
+│       │   │   └── ModelId.kt
+│       │   ├── ui/
+│       │   │   └── MainScreen.kt
+│       │   ├── wear/
+│       │   │   ├── AuthSyncCredentials.kt
+│       │   │   ├── PhoneWearableListenerService.kt
+│       │   │   └── SerializableCookieSlim.kt
+│       │   └── widget/
+│       │       └── ClaudeAppWidgetReceiver.kt
 │       ├── AndroidManifest.xml
 │       └── res/
 ├── gradle/
