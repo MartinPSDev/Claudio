@@ -46,6 +46,8 @@ claudio_kotlin/
 │       │   │   └── PushEvents.kt
 │       │   ├── api/
 │       │   │   ├── account/
+│       │   │   │   ├── AccountConsentModels.kt      # BannerDismissal, DocumentAcceptance
+│       │   │   │   ├── AccountDeletableResponse.kt
 │       │   │   │   ├── AccountProfile.kt
 │       │   │   │   ├── RavenType.kt
 │       │   │   │   └── SubscriptionLevel.kt
@@ -70,11 +72,33 @@ claudio_kotlin/
 │       │   │   │   └── MessageSender.kt
 │       │   │   ├── login/
 │       │   │   │   └── CodeConfiguration.kt
-│       │   │   └── mcp/
-│       │   │       ├── DirectoryServer.kt
-│       │   │       └── DirectoryServerType.kt
+│       │   │   ├── mcp/
+│       │   │   │   ├── DirectoryServer.kt
+│       │   │   │   └── DirectoryServerType.kt
+│       │   │   └── project/
+│       │   │       ├── Project.kt                  # Full 19-field entity
+│       │   │       ├── ProjectActorAccount.kt
+│       │   │       ├── ProjectDoc.kt               # ProjectDoc + ProjectKnowledgeStats
+│       │   │       ├── ProjectEnums.kt             # ProjectPermission, ProjectSubtype, ProjectFilter
+│       │   │       └── ProjectType.kt
+│       │   ├── app/
+│       │   │   ├── onboarding/v2/
+│       │   │   │   └── OnboardingPage.kt           # 7-step sealed interface
+│       │   │   ├── verification/
+│       │   │   │   └── VerificationScreens.kt
+│       │   │   └── SettingsScreenParams.kt
 │       │   ├── application/
 │       │   │   └── ClaudeApplication.kt
+│       │   ├── artifact/
+│       │   │   ├── details/
+│       │   │   │   └── ArtifactFullScreenParams.kt # Loaded, Published, Shared subtypes
+│       │   │   ├── model/
+│       │   │   │   ├── ArtifactMetadata.kt
+│       │   │   │   └── ArtifactType.kt             # 9-subtype sealed class
+│       │   │   └── sheet/
+│       │   │       └── ArtifactSheetParams.kt      # ArtifactBottomSheetParams + ArtifactShareParams
+│       │   ├── audio/
+│       │   │   └── MicrophoneAudioException.kt
 │       │   ├── bell/
 │       │   │   ├── assist/
 │       │   │   │   ├── ClaudeRecognitionService.kt
@@ -126,7 +150,9 @@ claudio_kotlin/
 │       │   │   ├── HostCapabilities.kt
 │       │   │   ├── HostContext.kt
 │       │   │   ├── InitializeResult.kt
-│       │   │   └── JsonRpc.kt
+│       │   │   ├── JsonRpc.kt
+│       │   │   ├── McpCapabilities.kt
+│       │   │   └── UiResources.kt                  # ToolResultParams, ResourceContent, UiResourceMeta, UiResourceCsp, UiResourcePermissions
 │       │   ├── model/
 │       │   │   └── IncomingPayload.kt
 │       │   ├── models/organization/
@@ -138,19 +164,39 @@ claudio_kotlin/
 │       │   │   └── AnthropicApiClient.kt
 │       │   ├── policy/
 │       │   │   └── PermissionsRationaleActivity.kt
-│       │   ├── project/details/
-│       │   │   ├── custominstructions/
-│       │   │   │   └── CustomInstructionsDialogRoute.kt
-│       │   │   ├── ProjectDetailsDialogDestination.kt
-│       │   │   └── ProjectDetailsScreenParams.kt
+│       │   ├── project/
+│       │   │   ├── create/
+│       │   │   │   ├── CreateTemplateProjectScreenParams.kt
+│       │   │   │   └── UploadMaterialsScreenParams.kt
+│       │   │   ├── details/
+│       │   │   │   ├── custominstructions/
+│       │   │   │   │   └── CustomInstructionsDialogRoute.kt
+│       │   │   │   ├── ProjectDetailsDialogDestination.kt
+│       │   │   │   └── ProjectDetailsScreenParams.kt
+│       │   │   └── knowledge/
+│       │   │       └── ProjectKnowledgeParams.kt   # ProjectKnowledgeScreenParams, DeleteProjectFileAlertDialogParams, DeleteProjectDocAlertDialogParams
+│       │   ├── sessions/
+│       │   │   ├── api/
+│       │   │   │   └── ControlRequestContent.kt    # 11-field control request + PermissionUpdate
+│       │   │   └── types/
+│       │   │       ├── BridgeEnvironmentInfo.kt    # BridgeEnvironmentInfo + BridgeSpawnMode + RequiresActionDetails
+│       │   │       ├── ControlResponsePayload.kt
+│       │   │       ├── EnvironmentResource.kt      # EnvironmentResource + EnvironmentKind + EnvironmentState + EnvironmentConfiguration
+│       │   │       ├── PostTurnSummary.kt
+│       │   │       ├── SessionContext.kt           # SessionContext + SessionContextSource + Outcome
+│       │   │       ├── SessionResource.kt          # SessionResource + SessionStatus + ConnectionStatus + WorkerStatus + ClientPresenceInfo + SessionExternalMetadata
+│       │   │       └── SharedSessionData.kt        # SharedSessionData + SdkEvent + SessionResource stub
 │       │   ├── settings/
 │       │   │   └── SettingsAppScreen.kt
 │       │   ├── stt/repo/
 │       │   │   ├── api/
 │       │   │   │   └── STTApiMessage.kt
 │       │   │   └── SpeechToTextLanguageNotFoundException.kt
+│       │   ├── tasks/ui/
+│       │   │   ├── TasksBottomSheetDestination.kt
+│       │   │   └── TasksListOverlay.kt
 │       │   ├── types/strings/
-│       │   │   ├── DomainTypes.kt
+│       │   │   ├── DomainTypes.kt                  # 20+ inline value classes (ChatId, ProjectId, MessageId, SessionId, AccountId, etc.)
 │       │   │   └── ModelId.kt
 │       │   ├── ui/
 │       │   │   └── MainScreen.kt
@@ -163,11 +209,11 @@ claudio_kotlin/
 │       ├── AndroidManifest.xml
 │       └── res/
 ├── gradle/
-│   └── libs.versions.toml     # Version catalog
+│   └── libs.versions.toml
 └── build.gradle.kts
 ```
 
-**Total: 82 Kotlin files across 30 packages** (as of last commit)
+**Total: 111 Kotlin files across 42 packages** (as of last commit)
 
 ---
 
