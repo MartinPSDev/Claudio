@@ -8,12 +8,3 @@ import kotlinx.serialization.Serializable
 data class CreateTemplateProjectScreenParams(
     val projectType: ProjectType? = null,
 )
-
-/** Classification of project type used when creating from a template. */
-@Serializable
-enum class ProjectType {
-    STANDARD,
-    TEMPLATE,
-    RESEARCH,
-    CODING,
-}

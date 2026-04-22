@@ -109,3 +109,13 @@ value class ChatSnapshotId(val value: String) {
 value class ProjectDocId(val value: String) {
     override fun toString(): String = value
 }
+
+@JvmInline
+value class SessionId(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class EnvironmentId(val value: String) {
+    override fun toString(): String = value
+}
