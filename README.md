@@ -39,34 +39,58 @@ claudio_kotlin/
 app/src/main/java/com/anthropic/claude/
 │
 ├── agentchat/              AgentChatDestination
-├── analytics/              AnalyticsProperties, events/, screens/, ads/
+│
+├── analytics/              AnalyticsProperties
+│   ├── ads/                GooglePlayReferrer
+│   ├── events/             AnalyticsEvent, PushEvents
+│   └── screens/            AnalyticsScreens
 │
 ├── api/
-│   ├── account/            AccountProfile, SubscriptionLevel, RavenType, AccountConsentModels
+│   ├── account/            Account, AccountProfile, AccountSettings, AccountConsentModels,
+│   │                       AccountDeletableResponse, AccountRequestModels (UpdateAccountRequest,
+│   │                       AppStartResponse), Organization, RavenType, SubscriptionLevel
 │   ├── artifacts/          ArtifactModels
-│   ├── chat/               ChatConversation, ChatMessage, CreateChatRequest, ToolState...
+│   ├── chat/               ChatConversation, ChatConversationSettings,
+│   │                       ChatConversationWithProjectReference, ChatCompletionEvent,
+│   │                       ChatCompletionRequest, ChatFeedback, ChatFeedbackType,
+│   │                       ChatMessage, ChatResponseTypes, ConversationSearch,
+│   │                       CreateChatRequest, MessageAssets, MessageAttachment,
+│   │                       MessageFileModels (MessageImageFile, MessageDocumentFile,
+│   │                       RecordToolApprovalRequest, ChatScreenParams),
+│   │                       MessageSender, SensitiveTextField, ToolState,
+│   │                       UpdatableChatConversationSettings
 │   │   ├── citation/       CitationModels
-│   │   ├── messages/       ContentBlock, StreamEvent, MessageDelta, BellNoteDelta, ThinkingSummary...
+│   │   ├── messages/       BellNoteDelta, CompactionStatus, CompletionMessage,
+│   │   │                   ContentBlock, ContentBlockDelta, FlagBlock, McpAuthRequiredEvent,
+│   │   │                   MessageDelta, MessageFlag, StreamEvent, TextBlock, ThinkingSummary,
+│   │   │                   ThinkingVoiceBlocks (ThinkingBlock, VoiceNoteBlock),
+│   │   │                   ToolResultBlock, ToolUseBlock, ToolUseBlockUpdateDelta,
+│   │   │                   UnknownContentBlock
 │   │   └── tool/           ResearchModels, ResearchStatusModels
 │   ├── common/             RateLimit
 │   ├── consent/            ConsentModels
 │   ├── conway/             ConwayModels
 │   ├── errors/             ApiErrors
-│   ├── events/             BatchEventLoggingResponse
-│   ├── experience/         ExperienceModels
+│   ├── events/             BatchEventLoggingResponse,
+│   │                       GrowthBookEvents (GrowthBookExperimentEventData,
+│   │                       GrowthBookFeatureEvaluationEventData)
+│   ├── experience/         ExperienceModels, SpotlightContent, BannerContent
 │   ├── export/             ExportModels
 │   ├── feedback/           FeedbackModels
 │   ├── kyc/                KycModels
-│   ├── login/              CodeConfiguration
-│   ├── mcp/                McpModels, DirectoryServer, DirectoryServerType
+│   ├── login/              CodeConfiguration, SendMagicLinkRequest,
+│   │                       VerifyLoginRequests (VerifyGoogleMobileRequest, VerifyMagicLinkRequest)
+│   ├── mcp/                McpModels, McpServer, McpTool, DirectoryServer, DirectoryServerType
 │   ├── memory/             MemorySynthesisResponse
 │   ├── mobile/             MobileModels
-│   ├── notification/       NotificationModels
+│   ├── model/              ModelOption, ThinkingModeOption
+│   ├── notification/       NotificationModels, FeaturePreference, NotificationChannelUpdateParams
 │   ├── orbit/              OrbitModels
-│   ├── project/            Project, ProjectDoc, ProjectEnums, ProjectType, ProjectActorAccount
+│   ├── project/            Project, ProjectActorAccount, ProjectDoc, ProjectEnums,
+│   │                       ProjectParams (ProjectCreateParams, ProjectUpdateParams), ProjectType
 │   ├── purchase/           VerifyPurchaseResponse
 │   ├── share/              ChatSnapshotModels
-│   ├── styles/             StyleModels
+│   ├── styles/             StyleModels, CustomStyle, DefaultStyle
 │   ├── sync/               SyncAuthModels
 │   ├── tasks/              TaskModels, TaskAgentModels
 │   ├── trusteddevice/      EnrollTrustedDeviceResponse
@@ -91,14 +115,15 @@ app/src/main/java/com/anthropic/claude/
 │
 ├── bell/
 │   ├── api/                BellApiServerMessage sealed, BellApiClientMessage sealed
-│   ├── assist/             ClaudeRecognitionService, ClaudeVoiceInteractionService...
+│   ├── assist/             ClaudeRecognitionService, ClaudeVoiceInteractionService,
+│   │                       ClaudeVoiceInteractionSessionService, ClaudeVoiceSession
 │   ├── tts/                TTSPlaybackService
 │   └── BellModeService
 │
 ├── chat/
-│   ├── bottomsheet/
-│   │   ├── model/          ChatBottomSheetModels
-│   │   └── tool/approval/appuse/  MobileAppUseDestination (Approval / CalendarSelection)
+│   ├── bottomsheet/        ChatScreenBottomSheetModels (ChatScreenModalBottomSheetDestination)
+│   │   ├── model/          ChatBottomSheetModels (ChatBottomSheetModel, ChatBottomSheetOption)
+│   │   └── tool/approval/appuse/  MobileAppUseDestination (Approval, CalendarSelection)
 │   ├── input/draft/        DraftMessage, QueuedSendRequest
 │   ├── parse/              ParsedContentBlock (McpToolInvocation, Thinking), ParsedContentBlockId
 │   │   └── sse/            ServerSentEventError, ServerSentEventException
@@ -111,34 +136,34 @@ app/src/main/java/com/anthropic/claude/
 │   └── overlays/           AllChatsListOverlay
 │
 ├── code/remote/
-│   ├── bottomsheet/        CodeRemoteBottomSheetDestination (ApprovalDiffDetail, ChannelMessage, ViewCode)
+│   ├── bottomsheet/        CodeRemoteBottomSheetDestination (ApprovalDiffDetail/ChannelMessage/ViewCode)
 │   ├── notification/       CCRPermissionActionReceiver/Worker, SessionReplyActionReceiver/Worker
 │   └── CodeRemoteSessionScreenParams
 │
 ├── configs/
 │   ├── flags/              UploadConfig, FileUploadConfig, StreamSmoothingConfig,
 │   │                       OnboardingConfig, AgentChatWorkerTypesConfig,
-│   │                       AgentChatOnboardingConfig, ImageSearchHelpCenterConfig,
-│   │                       ToolSearchModeConfig
-│   └── GrowthBookExposureSampleRateConfig, PersistedFeatureOverrides
+│   │                       AgentChatOnboardingConfig, FlagConfigs
+│   └── GrowthBookConfigs (GrowthBookExposureSampleRateConfig, PersistedFeatureOverrides)
 │
-├── connector/auth/         McpAuthException (ExchangeFailed, Denied, StartFailed, MissingCallbackParameters)
+├── connector/auth/         McpAuthException (ExchangeFailed, Denied, StartFailed,
+│                           MissingCallbackParameters)
 │
 ├── conway/
-│   ├── protocol/           ClientRegistrationRequest/Response, ConwayExtensionMeta,
-│   │                       AgentState, StreamMessage sealed (Connected/AgentsUpdated/ToolCall),
-│   │                       RichMessage sealed (Assistant/User/Status), ToolResultMessage,
-│   │                       ContainerHealthResponse, ConwaySearchHit, PaginatedMessages,
+│   ├── protocol/           ConwayProtocol (ClientRegistrationRequest/Response,
+│   │                       ConwayExtensionMeta, AgentState, StreamMessage sealed,
+│   │                       RichMessage sealed, ToolResultMessage, ContainerHealthResponse)
+│   │                       ConwayProtocolExtras (ConwaySearchHit, PaginatedMessages,
 │   │                       ConwayErrorPayload, ConwayClientInfo, ContentBlock sealed,
-│   │                       ModelInfo, UiDemoAppDestination
+│   │                       ModelInfo, UiDemoAppDestination)
 │   └── AppForegroundDetector, ConwayAppScreen, ConwayScopeHolder, ConwayWakeWorker
 │
 ├── core/telemetry/         SilentException
 ├── deeplink/               DeepLinkActivity
 │
 ├── firebase/fcm/           AnthropicFirebaseMessagingService
-│                           FcmIntentExtras (11 keys), CcrActions (3 broadcast actions),
-│                           17 FCM payload key constants, routing helpers
+│                           (FcmIntentExtras 11 keys, CcrActions 3 actions,
+│                           17 FCM payload key constants)
 │
 ├── login/                  MagicLinkSentConfig
 │
@@ -147,18 +172,26 @@ app/src/main/java/com/anthropic/claude/
 ├── mcpapps/
 │   ├── transport/          JsonRpc, HostCapabilities, HostContext, InitializeResult,
 │   │                       McpCapabilities, UiResources
-│   └── HydratedImageContent, McpAppFetchException, ModelContextTooLargeException,
-│       DomainValidationException
+│   └── McpAppModels (HydratedImageContent, McpAppFetchException,
+│       ModelContextTooLargeException, DomainValidationException)
 │
 ├── model/                  IncomingPayload
-├── models/organization/    AvailableModelsConfig, ModelFallbacksConfig, DefaultModelConfig
-├── networking/             AnthropicApiClient
+│
+├── models/organization/
+│   ├── configtypes/        AvailableModelsConfig, ModelFallbacksConfig,
+│   │                       GroveConfigStrings, MobileAppUseToolConfig
+│   └── DefaultModelConfig
+│
+├── networking/
+│   ├── cookies/serializer/ SerializableCookie
+│   └── AnthropicApiClient
+│
 ├── policy/                 PermissionsRationaleActivity
 │
 ├── project/
 │   ├── create/             CreateTemplateProjectScreenParams, UploadMaterialsScreenParams
-│   ├── details/            ProjectDetailsScreenParams, ProjectDetailsDialogDestination,
-│   │                       CustomInstructionsDialogRoute
+│   ├── details/            ProjectDetailsScreenParams, ProjectDetailsDialogDestination
+│   │   └── custominstructions/ CustomInstructionsDialogRoute
 │   ├── knowledge/          ProjectKnowledgeParams
 │   └── menu/               ProjectItemMenuDialogDestination (Delete/Rename/Dismissed)
 │
@@ -171,20 +204,25 @@ app/src/main/java/com/anthropic/claude/
 │                           EnvironmentResource, PostTurnSummary
 │
 ├── settings/
-│   ├── internal/           InternalSettingsAppScreen (4 destinations),
-│   │                       growthbook/GrowthBookModels (GateKind enum, overrides)
+│   ├── internal/           InternalSettingsAppScreen (4 destinations)
+│   │   └── growthbook/     GrowthBookModels
 │   └── SettingsAppScreen
 │
-├── stt/repo/               STTApiMessage, SpeechToTextLanguageNotFoundException
+├── stt/repo/               SpeechToTextLanguageNotFoundException
+│   └── api/                STTApiMessage
 │
 ├── tasks/ui/               TasksBottomSheetDestination, TasksListOverlay
 │
 ├── tool/
 │   ├── calendar/           EventInfo
-│   ├── model/              Tool sealed (Compass/Analysis/Artifacts/DriveSearch/Unknown),
-│   │                       SourceImage sealed, SearchToolInput, TaskStatusInput,
-│   │                       Calendar/Location PreviewData, ToolInvocationResult,
-│   │                       SearchMcpRegistryInput, TaskListOutput
+│   ├── custom/             PhoneCallMonitorEvent
+│   ├── mcp/                ServerBaseFrame
+│   ├── model/              ToolModels (Tool sealed, SourceImage, SearchToolInput,
+│   │                       TaskStatusInput, PreviewData variants, ToolInvocationResult,
+│   │                       SearchMcpRegistryInput, TaskListOutput),
+│   │                       DisplayToolInputs (PlacesMapDisplayV0Input, RecipeDisplayV0Input,
+│   │                       ChartDisplayV0Input, EventCreateV0Input),
+│   │                       SuggestConnectorsOutput, TaskProposeOutput
 │   └── ui/chat/            PhoneCallSheetDestination, FormSheetDestination
 │
 ├── types/strings/          DomainTypes (20+ inline value classes: ChatId, ProjectId,
@@ -194,12 +232,12 @@ app/src/main/java/com/anthropic/claude/
 │   ├── code/               SessionInputData, DiffLineComment, PendingAskUserQuestionSelections
 │   └── MainScreen
 │
-├── wear/                   AuthSyncCredentials, PhoneWearableListenerService, SerializableCookieSlim
+├── wear/                   AuthSyncCredentials, PhoneWearableListenerService,
+│                           SerializableCookieSlim
 └── widget/                 ClaudeAppWidgetReceiver
 ```
 
-**Total: 172 Kotlin files across 65+ packages** (commit `634caeb`)
-
+**Total: 211 Kotlin files across 75+ packages** (commit `c52c2d9`)
 ---
 
 ## Tech Stack (as found in the original APK)
