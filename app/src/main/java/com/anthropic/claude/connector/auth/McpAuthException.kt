@@ -1,32 +1,50 @@
 package com.anthropic.claude.connector.auth
 
-sealed class McpAuthException(message: String) : Exception(message) {
+/**
+ * Base sealed exception hierarchy for MCP OAuth authentication errors.
+ * Each subtype represents a distinct failure mode in the auth flow.
+ */
+sealed class McpAuthException(message: String, cause: Throwable? = null) :
+    Exception(message, cause) {
 
-    abstract fun errorCode(): String
+    /** Returns a machine-readable error code identifying this exception. */
+    abstract val errorCode: String
 
-    class Cancelled(message: String = "MCP auth cancelled") : McpAuthException(message) {
-        override fun errorCode() = "cancelled"
-    }
-
-    class Denied(message: String = "MCP auth denied") : McpAuthException(message) {
-        override fun errorCode() = "denied"
-    }
-
-    class MissingCallbackParameters(
-        message: String = "Missing MCP auth callback parameters",
-    ) : McpAuthException(message) {
-        override fun errorCode() = "missing_callback_parameters"
-    }
-
-    class StartFailed(message: String = "MCP auth start failed") : McpAuthException(message) {
-        override fun errorCode() = "start_failed"
-    }
-
+    /** The OAuth token exchange with the MCP server failed. */
     class ExchangeFailed(
-        message: String = "MCP auth token exchange failed",
+        message: String,
         cause: Throwable? = null,
-    ) : McpAuthException(message) {
-        init { cause?.let { initCause(it) } }
-        override fun errorCode() = "exchange_failed"
+    ) : McpAuthException(message, cause) {
+        override val errorCode = "exchange_failed"
+    }
+
+    /** The user explicitly denied the authorization request. */
+    class Denied(
+        message: String = "User denied authorization",
+        cause: Throwable? = null,
+    ) : McpAuthException(message, cause) {
+        override val errorCode = "denied"
+    }
+
+    /** The OAuth callback was missing required parameters (e.g. 'code'). */
+    class MissingCallbackParameters :
+        McpAuthException("Authentication failed: missing 'code' parameter") {
+        override val errorCode = "missing_code"
+    }
+
+    /** Launching the auth browser/activity failed. */
+    class StartFailed(
+        message: String,
+        cause: Throwable? = null,
+    ) : McpAuthException(message, cause) {
+        override val errorCode = "start_failed"
+    }
+
+    /** The user cancelled the auth flow (e.g. closed the browser tab). */
+    class Cancelled(
+        message: String = "Authentication cancelled",
+        cause: Throwable? = null,
+    ) : McpAuthException(message, cause) {
+        override val errorCode = "cancelled"
     }
 }
