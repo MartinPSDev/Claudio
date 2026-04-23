@@ -129,3 +129,8 @@ value class McpToolKey(val value: String) {
 value class ConversationCursor(val value: String) {
     override fun toString(): String = value
 }
+
+@JvmInline
+value class InsightId(val value: String) {
+    override fun toString(): String = value
+}
