@@ -40,14 +40,58 @@ data class PaginatedTasksResponse(
 )
 
 /**
- * Minimal task summary — full model in TaskResponse.kt.
- * Used as list item to avoid circular references.
+ * A context attachment (file/document) associated with a task.
+ */
+@Serializable
+data class TaskContextAttachment(
+    val uuid: String? = null,
+    val name: String? = null,
+    val type: String? = null,
+)
+
+/**
+ * A single step within a task, tracking granular progress.
+ * 11 fields from TaskStepResponse.smali (42 KB).
+ */
+@Serializable
+data class TaskStepResponse(
+    val uuid: String? = null,
+    val position: Int = 0,
+    val title: String? = null,
+    val notes: String? = null,
+    val status: String? = null,
+    @SerialName("status_description") val statusDescription: String? = null,
+    @SerialName("blocking_tool") val blockingTool: BlockingToolDetail? = null,
+    @SerialName("sub_items_completed") val subItemsCompleted: Int = 0,
+    @SerialName("sub_items_total") val subItemsTotal: Int = 0,
+    @SerialName("created_at") val createdAt: String? = null,
+    @SerialName("updated_at") val updatedAt: String? = null,
+)
+
+/**
+ * Full task record. 12 fields from TaskResponse.smali (54 KB).
  */
 @Serializable
 data class TaskResponse(
     val uuid: String? = null,
+    @SerialName("conversation_uuid") val conversationUuid: String? = null,
     val title: String? = null,
     val status: TaskStatus? = null,
+    @SerialName("status_description") val statusDescription: String? = null,
+    @SerialName("session_id") val sessionId: String? = null,
     @SerialName("created_at") val createdAt: String? = null,
     @SerialName("updated_at") val updatedAt: String? = null,
+    @SerialName("last_activity_at") val lastActivityAt: String? = null,
+    val context: String? = null,
+    @SerialName("context_attachments") val contextAttachments: List<TaskContextAttachment>? = null,
+    val steps: List<TaskStepResponse>? = null,
+)
+
+/**
+ * Response from the task events endpoint (streaming event log for a task).
+ */
+@Serializable
+data class TaskEventsResponse(
+    val data: List<kotlinx.serialization.json.JsonElement>? = null,
+    val pagination: TasksPagination? = null,
 )
