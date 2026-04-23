@@ -119,3 +119,13 @@ value class SessionId(val value: String) {
 value class EnvironmentId(val value: String) {
     override fun toString(): String = value
 }
+
+@JvmInline
+value class McpToolKey(val value: String) {
+    override fun toString(): String = value
+}
+
+@JvmInline
+value class ConversationCursor(val value: String) {
+    override fun toString(): String = value
+}
