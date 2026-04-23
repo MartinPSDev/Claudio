@@ -54,24 +54,6 @@ claudio_kotlin/
 │       │   │   ├── chat/
 │       │   │   │   ├── messages/
 │       │   │   │   │   ├── BellNoteDelta.kt
-│       │   │   │   │   ├── CompactionStatus.kt
-│       │   │   │   │   ├── CompletionMessage.kt
-│       │   │   │   │   ├── ContentBlock.kt
-│       │   │   │   │   ├── ContentBlockDelta.kt
-│       │   │   │   │   ├── McpAuthRequiredEvent.kt
-│       │   │   │   │   ├── MessageDelta.kt
-│       │   │   │   │   ├── MessageFlag.kt
-│       │   │   │   │   ├── StreamEvent.kt
-│       │   │   │   │   ├── ThinkingSummary.kt
-│       │   │   │   │   └── UnknownContentBlock.kt
-│       │   │   │   ├── ChatFeedback.kt
-│       │   │   │   ├── ChatFeedbackType.kt
-│       │   │   │   ├── ChatMessage.kt
-│       │   │   │   ├── CreateChatRequest.kt
-│       │   │   │   ├── MessageAttachment.kt
-│       │   │   │   └── MessageSender.kt
-│       │   │   ├── login/
-│       │   │   │   └── CodeConfiguration.kt
 │       │   │   ├── mcp/
 │       │   │   │   ├── DirectoryServer.kt
 │       │   │   │   └── DirectoryServerType.kt
