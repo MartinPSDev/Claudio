@@ -3,7 +3,7 @@
     package="com.anthropic.claude">
 
     <!-- ======================================================= -->
-    <!--  PERMISOS DE SISTEMA                                     -->
+    <!--  SYSTEM PERMISSIONS                                      -->
     <!-- ======================================================= -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.DETECT_SCREEN_CAPTURE" />
 
     <!-- ======================================================= -->
-    <!--  PERMISOS HEALTH CONNECT                                 -->
+    <!--  HEALTH CONNECT PERMISSIONS                              -->
     <!-- ======================================================= -->
     <uses-permission android:name="android.permission.health.READ_STEPS" />
     <uses-permission android:name="android.permission.health.READ_DISTANCE" />
@@ -61,7 +61,7 @@
     <uses-permission android:name="android.permission.health.READ_HEALTH_DATA_HISTORY" />
 
     <!-- ======================================================= -->
-    <!--  OTROS PERMISOS                                          -->
+    <!--  OTHER PERMISSIONS                                       -->
     <!-- ======================================================= -->
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -80,14 +80,14 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION" />
 
-    <!-- Permiso de firma para receivers dinámicos -->
+    <!-- Signature permission for dynamically-registered receivers -->
     <permission
         android:name="com.anthropic.claude.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
     <uses-permission android:name="com.anthropic.claude.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 
     <!-- ======================================================= -->
-    <!--  QUERIES (visibilidad de paquetes)                       -->
+    <!--  QUERIES (package visibility)                            -->
     <!-- ======================================================= -->
     <queries>
         <intent>
