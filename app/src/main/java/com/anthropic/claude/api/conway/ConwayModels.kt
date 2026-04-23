@@ -23,10 +23,8 @@ data class WebhookRecord(
  */
 @Serializable
 data class CreateWebhookRequest(
-    val url: String,
     @SerialName("trigger_word") val triggerWord: String,
     val label: String,
-    @SerialName("auth_type") val authType: String? = null,
 )
 
 /**
@@ -34,11 +32,8 @@ data class CreateWebhookRequest(
  */
 @Serializable
 data class UpdateWebhookRequest(
-    val url: String? = null,
-    @SerialName("trigger_word") val triggerWord: String? = null,
-    val label: String? = null,
     val enabled: Boolean? = null,
-    @SerialName("auth_type") val authType: String? = null,
+    val label: String? = null,
 )
 
 /**
