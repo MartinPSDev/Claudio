@@ -1,4 +1,4 @@
-# CLAUDIO ANDROID APP
+﻿# CLAUDIO ANDROID APP
 
 > **Educational purposes only.** This repository is a reverse-engineering and learning exercise. It is not affiliated with, endorsed by, or connected to Anthropic in any way.
 
@@ -24,11 +24,11 @@ The code in this repository **may differ from, be incomplete, or contain errors*
 
 If you attempt to compile and run this project on a physical device or emulator, **it will most likely fail** for the following reasons:
 
-- **Missing signing keys:** The original Claude app is signed with Anthropic's private certificate. This project uses a debug keystore that does not match the production signature.
+- **Missing signing keys:** The original Claude app is signed with Anthropic's private certificate.
 - **Missing API keys and secrets:** Firebase, Datadog, Sentry, Segment, and other third-party services require credentials (`google-services.json`, API tokens, etc.) that are not included in this repository.
-- **Play Protect restrictions:** Android's Play Protect system may block or warn about installing an APK that uses the `com.anthropic.claude` package name without a matching signature.
-- **Missing `google-services.json`:** The Firebase integration will fail at build time or runtime without this configuration file.
-- **Server-side authentication:** The app communicates with Anthropic's backend using session tokens obtained through a proprietary login flow that cannot be replicated without access to the production infrastructure.
+- **Play Protect restrictions:** Android's Play Protect system may block installation without a matching signature.
+- **Missing `google-services.json`:** Excluded from the repo via `.gitignore`. Firebase will fail without it.
+- **Server-side authentication:** The app communicates with Anthropic's backend using session tokens obtained through a proprietary login flow.
 
 ---
 
@@ -36,166 +36,169 @@ If you attempt to compile and run this project on a physical device or emulator,
 
 ```
 claudio_kotlin/
+app/src/main/java/com/anthropic/claude/
+│
+├── agentchat/              AgentChatDestination
+├── analytics/              AnalyticsProperties, events/, screens/, ads/
+│
+├── api/
+│   ├── account/            AccountProfile, SubscriptionLevel, RavenType, AccountConsentModels
+│   ├── artifacts/          ArtifactModels
+│   ├── chat/               ChatConversation, ChatMessage, CreateChatRequest, ToolState...
+│   │   ├── citation/       CitationModels
+│   │   ├── messages/       ContentBlock, StreamEvent, MessageDelta, BellNoteDelta, ThinkingSummary...
+│   │   └── tool/           ResearchModels, ResearchStatusModels
+│   ├── common/             RateLimit
+│   ├── consent/            ConsentModels
+│   ├── conway/             ConwayModels
+│   ├── errors/             ApiErrors
+│   ├── events/             BatchEventLoggingResponse
+│   ├── experience/         ExperienceModels
+│   ├── export/             ExportModels
+│   ├── feedback/           FeedbackModels
+│   ├── kyc/                KycModels
+│   ├── login/              CodeConfiguration
+│   ├── mcp/                McpModels, DirectoryServer, DirectoryServerType
+│   ├── memory/             MemorySynthesisResponse
+│   ├── mobile/             MobileModels
+│   ├── notification/       NotificationModels
+│   ├── orbit/              OrbitModels
+│   ├── project/            Project, ProjectDoc, ProjectEnums, ProjectType, ProjectActorAccount
+│   ├── purchase/           VerifyPurchaseResponse
+│   ├── share/              ChatSnapshotModels
+│   ├── styles/             StyleModels
+│   ├── sync/               SyncAuthModels
+│   ├── tasks/              TaskModels, TaskAgentModels
+│   ├── trusteddevice/      EnrollTrustedDeviceResponse
+│   ├── usage/              UsageModels
+│   ├── verification/       PhoneVerificationModels
+│   └── wiggle/             WiggleModels
+│
 ├── app/
-│   └── src/main/
-│       ├── java/com/anthropic/claude/
-│       │   ├── agentchat/
-│       │   │   └── AgentChatDestination.kt
-│       │   ├── analytics/events/
-│       │   │   ├── AnalyticsEvent.kt
-│       │   │   └── PushEvents.kt
-│       │   ├── api/
-│       │   │   ├── account/
-│       │   │   │   ├── AccountConsentModels.kt      # BannerDismissal, DocumentAcceptance
-│       │   │   │   ├── AccountDeletableResponse.kt
-│       │   │   │   ├── AccountProfile.kt
-│       │   │   │   ├── RavenType.kt
-│       │   │   │   └── SubscriptionLevel.kt
-│       │   │   ├── chat/
-│       │   │   │   ├── messages/
-│       │   │   │   │   ├── BellNoteDelta.kt
-│       │   │   ├── mcp/
-│       │   │   │   ├── DirectoryServer.kt
-│       │   │   │   └── DirectoryServerType.kt
-│       │   │   └── project/
-│       │   │       ├── Project.kt                  # Full 19-field entity
-│       │   │       ├── ProjectActorAccount.kt
-│       │   │       ├── ProjectDoc.kt               # ProjectDoc + ProjectKnowledgeStats
-│       │   │       ├── ProjectEnums.kt             # ProjectPermission, ProjectSubtype, ProjectFilter
-│       │   │       └── ProjectType.kt
-│       │   ├── app/
-│       │   │   ├── onboarding/v2/
-│       │   │   │   └── OnboardingPage.kt           # 7-step sealed interface
-│       │   │   ├── verification/
-│       │   │   │   └── VerificationScreens.kt
-│       │   │   └── SettingsScreenParams.kt
-│       │   ├── application/
-│       │   │   └── ClaudeApplication.kt
-│       │   ├── artifact/
-│       │   │   ├── details/
-│       │   │   │   └── ArtifactFullScreenParams.kt # Loaded, Published, Shared subtypes
-│       │   │   ├── model/
-│       │   │   │   ├── ArtifactMetadata.kt
-│       │   │   │   └── ArtifactType.kt             # 9-subtype sealed class
-│       │   │   └── sheet/
-│       │   │       └── ArtifactSheetParams.kt      # ArtifactBottomSheetParams + ArtifactShareParams
-│       │   ├── audio/
-│       │   │   └── MicrophoneAudioException.kt
-│       │   ├── bell/
-│       │   │   ├── assist/
-│       │   │   │   ├── ClaudeRecognitionService.kt
-│       │   │   │   ├── ClaudeVoiceInteractionService.kt
-│       │   │   │   ├── ClaudeVoiceInteractionSessionService.kt
-│       │   │   │   └── ClaudeVoiceSession.kt
-│       │   │   ├── tts/
-│       │   │   │   └── TTSPlaybackService.kt
-│       │   │   └── BellModeService.kt
-│       │   ├── chat/
-│       │   │   └── MessageSseService.kt
-│       │   ├── chatlist/all/
-│       │   │   ├── bottomsheet/
-│       │   │   │   └── AllChatsListBottomSheetDestination.kt
-│       │   │   └── overlays/
-│       │   │       └── AllChatsListOverlay.kt
-│       │   ├── code/remote/notification/
-│       │   │   ├── CCRPermissionActionReceiver.kt
-│       │   │   ├── CCRPermissionActionWorker.kt
-│       │   │   ├── SessionReplyActionReceiver.kt
-│       │   │   └── SessionReplyActionWorker.kt
-│       │   ├── configs/flags/
-│       │   │   ├── AgentChatOnboardingConfig.kt
-│       │   │   ├── AgentChatWorkerTypesConfig.kt
-│       │   │   ├── FileUploadConfig.kt
-│       │   │   ├── OnboardingConfig.kt
-│       │   │   ├── StreamSmoothingConfig.kt
-│       │   │   └── UploadConfig.kt
-│       │   ├── connector/auth/
-│       │   │   └── McpAuthException.kt
-│       │   ├── conway/
-│       │   │   ├── AppForegroundDetector.kt
-│       │   │   ├── ConwayAppScreen.kt
-│       │   │   ├── ConwayScopeHolder.kt
-│       │   │   └── ConwayWakeWorker.kt
-│       │   ├── core/telemetry/
-│       │   │   └── SilentException.kt
-│       │   ├── deeplink/
-│       │   │   └── DeepLinkActivity.kt
-│       │   ├── firebase/fcm/
-│       │   │   └── AnthropicFirebaseMessagingService.kt
-│       │   ├── login/
-│       │   │   └── MagicLinkSentConfig.kt
-│       │   ├── mainactivity/
-│       │   │   ├── AssistantOverlayActivity.kt
-│       │   │   ├── IntentRouter.kt
-│       │   │   └── MainActivity.kt
-│       │   ├── mcpapps/transport/
-│       │   │   ├── HostCapabilities.kt
-│       │   │   ├── HostContext.kt
-│       │   │   ├── InitializeResult.kt
-│       │   │   ├── JsonRpc.kt
-│       │   │   ├── McpCapabilities.kt
-│       │   │   └── UiResources.kt                  # ToolResultParams, ResourceContent, UiResourceMeta, UiResourceCsp, UiResourcePermissions
-│       │   ├── model/
-│       │   │   └── IncomingPayload.kt
-│       │   ├── models/organization/
-│       │   │   ├── configtypes/
-│       │   │   │   ├── AvailableModelsConfig.kt
-│       │   │   │   └── ModelFallbacksConfig.kt
-│       │   │   └── DefaultModelConfig.kt
-│       │   ├── networking/
-│       │   │   └── AnthropicApiClient.kt
-│       │   ├── policy/
-│       │   │   └── PermissionsRationaleActivity.kt
-│       │   ├── project/
-│       │   │   ├── create/
-│       │   │   │   ├── CreateTemplateProjectScreenParams.kt
-│       │   │   │   └── UploadMaterialsScreenParams.kt
-│       │   │   ├── details/
-│       │   │   │   ├── custominstructions/
-│       │   │   │   │   └── CustomInstructionsDialogRoute.kt
-│       │   │   │   ├── ProjectDetailsDialogDestination.kt
-│       │   │   │   └── ProjectDetailsScreenParams.kt
-│       │   │   └── knowledge/
-│       │   │       └── ProjectKnowledgeParams.kt   # ProjectKnowledgeScreenParams, DeleteProjectFileAlertDialogParams, DeleteProjectDocAlertDialogParams
-│       │   ├── sessions/
-│       │   │   ├── api/
-│       │   │   │   └── ControlRequestContent.kt    # 11-field control request + PermissionUpdate
-│       │   │   └── types/
-│       │   │       ├── BridgeEnvironmentInfo.kt    # BridgeEnvironmentInfo + BridgeSpawnMode + RequiresActionDetails
-│       │   │       ├── ControlResponsePayload.kt
-│       │   │       ├── EnvironmentResource.kt      # EnvironmentResource + EnvironmentKind + EnvironmentState + EnvironmentConfiguration
-│       │   │       ├── PostTurnSummary.kt
-│       │   │       ├── SessionContext.kt           # SessionContext + SessionContextSource + Outcome
-│       │   │       ├── SessionResource.kt          # SessionResource + SessionStatus + ConnectionStatus + WorkerStatus + ClientPresenceInfo + SessionExternalMetadata
-│       │   │       └── SharedSessionData.kt        # SharedSessionData + SdkEvent + SessionResource stub
-│       │   ├── settings/
-│       │   │   └── SettingsAppScreen.kt
-│       │   ├── stt/repo/
-│       │   │   ├── api/
-│       │   │   │   └── STTApiMessage.kt
-│       │   │   └── SpeechToTextLanguageNotFoundException.kt
-│       │   ├── tasks/ui/
-│       │   │   ├── TasksBottomSheetDestination.kt
-│       │   │   └── TasksListOverlay.kt
-│       │   ├── types/strings/
-│       │   │   ├── DomainTypes.kt                  # 20+ inline value classes (ChatId, ProjectId, MessageId, SessionId, AccountId, etc.)
-│       │   │   └── ModelId.kt
-│       │   ├── ui/
-│       │   │   └── MainScreen.kt
-│       │   ├── wear/
-│       │   │   ├── AuthSyncCredentials.kt
-│       │   │   ├── PhoneWearableListenerService.kt
-│       │   │   └── SerializableCookieSlim.kt
-│       │   └── widget/
-│       │       └── ClaudeAppWidgetReceiver.kt
-│       ├── AndroidManifest.xml
-│       └── res/
-├── gradle/
-│   └── libs.versions.toml
-└── build.gradle.kts
+│   ├── onboarding/v2/      OnboardingPage (7-step sealed)
+│   ├── verification/       VerificationScreens
+│   └── SettingsScreenParams
+│
+├── application/            ClaudeApplication
+│
+├── artifact/
+│   ├── details/            ArtifactFullScreenParams
+│   ├── dialog/             PublishArtifactParams
+│   ├── model/              ArtifactMetadata, ArtifactType (9-subtype sealed)
+│   └── sheet/              ArtifactSheetParams
+│
+├── audio/                  MicrophoneAudioException
+│
+├── bell/
+│   ├── api/                BellApiServerMessage sealed, BellApiClientMessage sealed
+│   ├── assist/             ClaudeRecognitionService, ClaudeVoiceInteractionService...
+│   ├── tts/                TTSPlaybackService
+│   └── BellModeService
+│
+├── chat/
+│   ├── bottomsheet/
+│   │   ├── model/          ChatBottomSheetModels
+│   │   └── tool/approval/appuse/  MobileAppUseDestination (Approval / CalendarSelection)
+│   ├── input/draft/        DraftMessage, QueuedSendRequest
+│   ├── parse/              ParsedContentBlock (McpToolInvocation, Thinking), ParsedContentBlockId
+│   │   └── sse/            ServerSentEventError, ServerSentEventException
+│   ├── queue/              QueuedMessageWorkerArgs, QueuedMessageWorker
+│   ├── share/              SharedChatModalBottomSheetDestination (4 destinations)
+│   └── MessageSseService
+│
+├── chatlist/all/
+│   ├── bottomsheet/        AllChatsListBottomSheetDestination
+│   └── overlays/           AllChatsListOverlay
+│
+├── code/remote/
+│   ├── bottomsheet/        CodeRemoteBottomSheetDestination (ApprovalDiffDetail, ChannelMessage, ViewCode)
+│   ├── notification/       CCRPermissionActionReceiver/Worker, SessionReplyActionReceiver/Worker
+│   └── CodeRemoteSessionScreenParams
+│
+├── configs/
+│   ├── flags/              UploadConfig, FileUploadConfig, StreamSmoothingConfig,
+│   │                       OnboardingConfig, AgentChatWorkerTypesConfig,
+│   │                       AgentChatOnboardingConfig, ImageSearchHelpCenterConfig,
+│   │                       ToolSearchModeConfig
+│   └── GrowthBookExposureSampleRateConfig, PersistedFeatureOverrides
+│
+├── connector/auth/         McpAuthException (ExchangeFailed, Denied, StartFailed, MissingCallbackParameters)
+│
+├── conway/
+│   ├── protocol/           ClientRegistrationRequest/Response, ConwayExtensionMeta,
+│   │                       AgentState, StreamMessage sealed (Connected/AgentsUpdated/ToolCall),
+│   │                       RichMessage sealed (Assistant/User/Status), ToolResultMessage,
+│   │                       ContainerHealthResponse, ConwaySearchHit, PaginatedMessages,
+│   │                       ConwayErrorPayload, ConwayClientInfo, ContentBlock sealed,
+│   │                       ModelInfo, UiDemoAppDestination
+│   └── AppForegroundDetector, ConwayAppScreen, ConwayScopeHolder, ConwayWakeWorker
+│
+├── core/telemetry/         SilentException
+├── deeplink/               DeepLinkActivity
+│
+├── firebase/fcm/           AnthropicFirebaseMessagingService
+│                           FcmIntentExtras (11 keys), CcrActions (3 broadcast actions),
+│                           17 FCM payload key constants, routing helpers
+│
+├── login/                  MagicLinkSentConfig
+│
+├── mainactivity/           MainActivity, AssistantOverlayActivity, IntentRouter
+│
+├── mcpapps/
+│   ├── transport/          JsonRpc, HostCapabilities, HostContext, InitializeResult,
+│   │                       McpCapabilities, UiResources
+│   └── HydratedImageContent, McpAppFetchException, ModelContextTooLargeException,
+│       DomainValidationException
+│
+├── model/                  IncomingPayload
+├── models/organization/    AvailableModelsConfig, ModelFallbacksConfig, DefaultModelConfig
+├── networking/             AnthropicApiClient
+├── policy/                 PermissionsRationaleActivity
+│
+├── project/
+│   ├── create/             CreateTemplateProjectScreenParams, UploadMaterialsScreenParams
+│   ├── details/            ProjectDetailsScreenParams, ProjectDetailsDialogDestination,
+│   │                       CustomInstructionsDialogRoute
+│   ├── knowledge/          ProjectKnowledgeParams
+│   └── menu/               ProjectItemMenuDialogDestination (Delete/Rename/Dismissed)
+│
+├── protos/push/            ConwayWakeRequest (Wire proto)
+│
+├── sessions/
+│   ├── api/                ControlRequestContent (11 fields + PermissionUpdate)
+│   └── types/              SessionResource, SessionTypes, SessionContext, SharedSessionData,
+│                           BridgeEnvironmentInfo, ControlResponsePayload,
+│                           EnvironmentResource, PostTurnSummary
+│
+├── settings/
+│   ├── internal/           InternalSettingsAppScreen (4 destinations),
+│   │                       growthbook/GrowthBookModels (GateKind enum, overrides)
+│   └── SettingsAppScreen
+│
+├── stt/repo/               STTApiMessage, SpeechToTextLanguageNotFoundException
+│
+├── tasks/ui/               TasksBottomSheetDestination, TasksListOverlay
+│
+├── tool/
+│   ├── calendar/           EventInfo
+│   ├── model/              Tool sealed (Compass/Analysis/Artifacts/DriveSearch/Unknown),
+│   │                       SourceImage sealed, SearchToolInput, TaskStatusInput,
+│   │                       Calendar/Location PreviewData, ToolInvocationResult,
+│   │                       SearchMcpRegistryInput, TaskListOutput
+│   └── ui/chat/            PhoneCallSheetDestination, FormSheetDestination
+│
+├── types/strings/          DomainTypes (20+ inline value classes: ChatId, ProjectId,
+│                           MessageId, SessionId, AccountId...), ModelId
+│
+├── ui/
+│   ├── code/               SessionInputData, DiffLineComment, PendingAskUserQuestionSelections
+│   └── MainScreen
+│
+├── wear/                   AuthSyncCredentials, PhoneWearableListenerService, SerializableCookieSlim
+└── widget/                 ClaudeAppWidgetReceiver
 ```
 
-**Total: 111 Kotlin files across 42 packages** (as of last commit)
+**Total: 172 Kotlin files across 65+ packages** (commit `634caeb`)
 
 ---
 
