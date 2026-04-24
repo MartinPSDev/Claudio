@@ -1,4 +1,4 @@
-﻿# CLAUDIO ANDROID APP
+# CLAUDIO ANDROID APP
 
 > **Educational purposes only.** This repository is a reverse-engineering and learning exercise. It is not affiliated with, endorsed by, or connected to Anthropic in any way.
 
@@ -199,15 +199,15 @@ app/src/main/java/com/anthropic/claude/
 │   │   └── DefaultModelConfig
 │   └── StickyModelSelection
 │
-├── networking/                                          ← NUEVA CAPA DE RED COMPLETA
-│   ├── ApiEndpoints.kt     55+ endpoint path constants agrupados por dominio:
+├── networking/                                          ← COMPLETE NETWORKING LAYER
+│   ├── ApiEndpoints.kt     55+ endpoint path constants grouped by domain:
 │   │                       Auth / Account / Consent / Chat / Files (Wiggle) /
 │   │                       Artifacts / Projects / Styles / Memory / Notifications /
 │   │                       Orbit / Tasks / Sessions / MCP / Experiences
-│   ├── AnthropicApiClient  OkHttp client — 30+ métodos tipados usando ApiEndpoints
+│   ├── AnthropicApiClient  OkHttp client — 30+ typed methods using ApiEndpoints
 │   ├── NetworkInterceptors SessionInterceptor (cookie + headers) +
-│   │                       AuthExpiredInterceptor (401 → callback)
-│   ├── NetworkingModule    Factory para OkHttpClient + AnthropicApiClient
+│   │                       AuthExpiredInterceptor (401 → logout callback)
+│   ├── NetworkingModule    Factory for OkHttpClient + AnthropicApiClient
 │   ├── ApiResult           ApiResult<T> sealed (Success/Error/NetworkError) +
 │   │                       ClaudeApiError / ClaudeApiErrorDetail
 │   └── cookies/serializer/ SerializableCookie
@@ -276,7 +276,7 @@ app/src/main/java/com/anthropic/claude/
 └── widget/                 ClaudeAppWidgetReceiver
 ```
 
-**Total: 278 Kotlin files across 85+ packages** (commit `6f55fdd`)
+**Total: 439 Kotlin files across 100+ packages** (commit `ae0325a`)
 
 ---
 
