@@ -36,6 +36,14 @@ sealed interface ChatOptionsBottomSheetDestination {
         val promptName: String? = null,
     ) : ChatOptionsBottomSheetDestination
 
+    /** Add items to the current chat (files, tools, etc.). */
+    data object AddToChat : ChatOptionsBottomSheetDestination
+
+    /** Add tools from a specific MCP server to the chat. */
+    data class AddFromMcpServer(
+        val serverId: String? = null,
+    ) : ChatOptionsBottomSheetDestination
+
     /** Sheet closed / dismissed. */
     data object Closed : ChatOptionsBottomSheetDestination
 }
