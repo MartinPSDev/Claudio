@@ -1,41 +1,49 @@
 package com.anthropic.claude.networking
 
-import com.anthropic.claude.protos.push.LoggedInPushOperationsService
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import java.util.concurrent.TimeUnit
+import android.content.Context
 
 /**
- * Factory that builds the shared [OkHttpClient] and related networking components.
+ * Factory that wires together the OkHttpClient, interceptors, and AnthropicApiClient.
  */
 object NetworkingModule {
 
-    fun buildOkHttpClient(
-        sessionTokenProvider: () -> String?,
-        onSessionExpired: () -> Unit,
-        enableLogging: Boolean = false,
-    ): OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(120, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
-        .apply {
-            if (enableLogging) {
-                addInterceptor(HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                })
-            }
-        }
-        .addInterceptor(SessionInterceptor(sessionTokenProvider))
-        .addInterceptor(AuthExpiredInterceptor(onSessionExpired))
-        .build()
+    /**
+     * Build and return a fully-configured [AnthropicApiClient].
+     *
+     * @param context      Application context (used for cookie persistence).
+     * @param onAuthExpired Callback invoked by [AuthExpiredInterceptor] on 401 responses.
+     */
+    fun provideApiClient(
+        context: Context,
+        onAuthExpired: () -> Unit,
+    ): AnthropicApiClient {
+        val cookieJar = provideCookieJar(context)
+        val sessionInterceptor = SessionInterceptor(cookieJar)
+        val authExpiredInterceptor = AuthExpiredInterceptor(onAuthExpired)
 
-    fun buildApiClient(
-        sessionTokenProvider: () -> String?,
-        onSessionExpired: () -> Unit,
-        baseUrl: String = AnthropicApiClient.BASE_URL_PRODUCTION,
-        enableLogging: Boolean = false,
-    ): AnthropicApiClient = AnthropicApiClient(
-        baseUrl = baseUrl,
-        sessionToken = sessionTokenProvider(),
-    )
+        val okHttpClient = provideOkHttpClient(
+            sessionInterceptor = sessionInterceptor,
+            authExpiredInterceptor = authExpiredInterceptor,
+            cookieJar = cookieJar,
+        )
+
+        return AnthropicApiClient(okHttpClient)
+    }
+
+    private fun provideCookieJar(context: Context): PersistentCookieJar =
+        PersistentCookieJar(context)
+
+    private fun provideOkHttpClient(
+        sessionInterceptor: SessionInterceptor,
+        authExpiredInterceptor: AuthExpiredInterceptor,
+        cookieJar: PersistentCookieJar,
+    ): okhttp3.OkHttpClient =
+        okhttp3.OkHttpClient.Builder()
+            .cookieJar(cookieJar)
+            .addInterceptor(sessionInterceptor)
+            .addInterceptor(authExpiredInterceptor)
+            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
 }
