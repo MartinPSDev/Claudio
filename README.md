@@ -40,7 +40,7 @@ app/src/main/java/com/anthropic/claude/
 │
 ├── agentchat/              AgentChatDestination
 │
-├── analytics/              AnalyticsProperties
+├── analytics/              AnalyticsProperties, AnalyticsTraits
 │   ├── ads/                GooglePlayReferrer
 │   ├── events/             AnalyticsEvent, PushEvents
 │   └── screens/            AnalyticsScreens
@@ -48,9 +48,10 @@ app/src/main/java/com/anthropic/claude/
 ├── api/
 │   ├── account/            Account, AccountProfile, AccountSettings, AccountConsentModels,
 │   │                       AccountDeletableResponse, AccountRequestModels (UpdateAccountRequest,
-│   │                       AppStartResponse), Organization, RavenType, SubscriptionLevel,
+│   │                       AppStartResponse), Organization, OrganizationSettings, RavenType,
+│   │                       SubscriptionLevel, BillingType (14-value enum),
 │   │                       GrowthBookModels (GrowthBookFeature, GrowthBookRule,
-│   │                       GrowthBookExperimentResult), Membership
+│   │                       GrowthBookExperimentResult), GrowthBookSchema, Membership
 │   ├── artifacts/          ArtifactModels
 │   ├── chat/               ChatConversation, ChatConversationSettings,
 │   │                       ChatConversationWithProjectReference, ChatCompletionEvent,
@@ -58,19 +59,21 @@ app/src/main/java/com/anthropic/claude/
 │   │                       ChatMessage, ChatResponseTypes, ConversationSearch,
 │   │                       CreateChatRequest, MessageAssets, MessageAttachment,
 │   │                       MessageFileModels (MessageImageFile, MessageDocumentFile,
-│   │                       RecordToolApprovalRequest, ChatScreenParams),
-│   │                       MessageSender, SensitiveTextField, ToolState,
-│   │                       UpdatableChatConversationSettings
+│   │                       RecordToolApprovalRequest), MessageSender, MoveChatsRequest,
+│   │                       RecordToolResultRequest, SensitiveTextField, ToolState,
+│   │                       UpdatableChatConversationSettings, UpdateChatRequest
 │   │   ├── citation/       CitationModels
-│   │   ├── messages/       BellNoteDelta, CompactionStatus, CompletionMessage,
-│   │   │                   ContentBlock, ContentBlockDelta, FlagBlock,
-│   │   │                   McpAuthRequiredEvent, MessageDelta, MessageFlag,
-│   │   │                   StreamEvent, TextBlock, ThinkingSummary,
+│   │   ├── messages/       BellNoteDelta, CompactionStatus, CompactionStatusEvent,
+│   │   │                   CompletionMessage, ContentBlock, ContentBlockDelta, FlagBlock,
+│   │   │                   McpAuthRequiredEvent, MessageDelta, MessageFlag, StreamEvent,
+│   │   │                   TextBlock, ThinkingSummary,
 │   │   │                   ThinkingVoiceBlocks (ThinkingBlock, VoiceNoteBlock),
 │   │   │                   ToolResultBlock, ToolUseBlock, ToolUseBlockUpdateDelta,
 │   │   │                   UnknownContentBlock
-│   │   └── tool/           ResearchModels, ResearchStatusModels
-│   ├── common/             RateLimit
+│   │   └── tool/           ResearchModels, ResearchStatusModels,
+│   │                       ToolPropertyModels (IntegerProperty, NumberProperty,
+│   │                       GenericSourceMetadata), ToolResultKnowledge, WebpageMetadata
+│   ├── common/             RateLimit, ApproachingRateLimit
 │   ├── consent/            ConsentModels, ConsentRequestModels (CheckConsentRequest,
 │   │                       RevokeConsentRequest), UserConsentRequest
 │   ├── conway/             ConwayModels
@@ -78,37 +81,41 @@ app/src/main/java/com/anthropic/claude/
 │   ├── events/             BatchEventLoggingResponse,
 │   │                       GrowthBookEvents (GrowthBookExperimentEventData,
 │   │                       GrowthBookFeatureEvaluationEventData)
-│   ├── experience/         ExperienceModels, Experience, SpotlightContent,
-│   │                       BannerContent, ExperienceTrackRequest
+│   ├── experience/         ExperienceModels, Experience, SpotlightContent, BannerContent,
+│   │                       ChatTooltipContent, ExperienceTrackRequest,
+│   │                       ExperienceActionModels (TrackActionedData, ExperienceActionRequest),
+│   │                       ExperiencesResponse (ExperiencesResponse, ExperienceRules)
 │   ├── export/             ExportModels
+│   ├── feature/            FeatureSettings
 │   ├── feedback/           FeedbackModels
 │   ├── kyc/                KycModels
 │   ├── login/              CodeConfiguration, SendMagicLinkRequest,
-│   │                       VerifyLoginRequests (VerifyGoogleMobileRequest,
-│   │                       VerifyMagicLinkRequest)
+│   │                       VerifyLoginRequests (VerifyGoogleMobileRequest, VerifyMagicLinkRequest)
 │   ├── mcp/                McpModels, McpServer, McpTool, McpToolAnnotations,
 │   │                       DirectoryServer, DirectoryServerType,
-│   │                       AttachMcpPromptRequest
+│   │                       AttachMcpPromptRequest, CreateMcpRemoteServerRequest
 │   ├── memory/             MemorySynthesisResponse
 │   ├── mobile/             MobileModels
 │   ├── model/              ModelOption, ThinkingModeOption, ModelCapabilities
-│   ├── notification/       NotificationModels, FeaturePreference,
-│   │                       NotificationChannelUpdateParams
+│   ├── notification/       NotificationModels, FeaturePreference, NotificationChannelUpdateParams
 │   ├── orbit/              OrbitModels
 │   ├── project/            Project, ProjectActorAccount, ProjectDoc, ProjectEnums,
 │   │                       ProjectParams (ProjectCreateParams, ProjectUpdateParams),
-│   │                       ProjectType
+│   │                       ProjectType, PaginatedProjectsResponse
 │   ├── purchase/           VerifyPurchaseResponse
 │   ├── share/              ChatSnapshotModels
-│   ├── styles/             StyleModels, CustomStyle, DefaultStyle
-│   ├── sync/               SyncAuthModels
-│   ├── tasks/              TaskModels, TaskAgentModels
+│   ├── styles/             StyleModels, CustomStyle, DefaultStyle, StylesConfig
+│   ├── sync/               SyncAuthModels, FinishAuthRequest
+│   ├── tasks/              TaskModels, TaskAgentModels, McpToolUseEvent,
+│   │                       CustomToolUseEvent, AgentToolUseEvent
 │   ├── trusteddevice/      EnrollTrustedDeviceResponse
 │   ├── usage/              UsageModels
 │   ├── verification/       PhoneVerificationModels
 │   └── wiggle/             WiggleModels
 │
 ├── app/
+│   ├── main/               MainAppScreens (LoggedIn)
+│   │   └── loggedin/       BootstrapScreen (NeedsBootstrap, Bootstrapped)
 │   ├── onboarding/v2/      OnboardingPage (7-step sealed)
 │   ├── verification/       VerificationScreens
 │   └── SettingsScreenParams
@@ -117,39 +124,36 @@ app/src/main/java/com/anthropic/claude/
 │
 ├── artifact/
 │   ├── details/            ArtifactFullScreenParams
-│   ├── dialog/             PublishArtifactParams
+│   ├── dialog/             ArtifactDialogModels
 │   ├── model/              ArtifactMetadata, ArtifactType (9-subtype sealed)
 │   └── sheet/              ArtifactSheetParams
 │
 ├── audio/                  MicrophoneAudioException
 │
 ├── bell/
-│   ├── api/                BellApiServerMessage sealed, BellApiClientMessage sealed
+│   ├── api/                BellApiModels
 │   ├── assist/             ClaudeRecognitionService, ClaudeVoiceInteractionService,
 │   │                       ClaudeVoiceInteractionSessionService, ClaudeVoiceSession
 │   ├── tts/                TTSPlaybackService
 │   └── BellModeService, VoiceSessionSummary
 │
 ├── chat/
-│   ├── bottomsheet/        ChatScreenBottomSheetModels (ToolApproval),
-│   │                       ChatScreenModalBottomSheetExtras (Feedback,
-│   │                       PreviewImage, PreviewPdf)
-│   │   ├── model/          ChatBottomSheetModels (ChatBottomSheetModel,
-│   │   │                   ChatBottomSheetOption)
+│   ├── bottomsheet/        ChatScreenBottomSheetModels, ChatScreenModalBottomSheetExtras
+│   │                       (Feedback, PreviewImage, PreviewPdf),
+│   │                       ViewCombinedSources, ViewSources
+│   │   ├── model/          ChatBottomSheetModels
 │   │   ├── options/        ChatOptionsBottomSheetDestination (SelectToolAccess,
-│   │   │                   SelectStyle, SelectProject, ConnectorDirectory,
-│   │   │                   Connectors, ConnectorDirectoryDetail, McpServerTools,
-│   │   │                   McpPromptTemplate, Closed)
+│   │   │                   SelectStyle, SelectProject, ConnectorDirectory, Connectors,
+│   │   │                   ConnectorDirectoryDetail, McpServerTools, McpPromptTemplate, Closed)
 │   │   └── tool/approval/appuse/  MobileAppUseDestination
 │   ├── dialogs/            ChatScreenDialog (Delete, StopResearch, Dismissed)
 │   ├── input/draft/        DraftMessage, QueuedSendRequest
 │   ├── menu/               ChatItemMenuDialogDestination (Rename, Dismissed)
 │   ├── modelselector/      ModelRedirect
-│   ├── parse/              ParsedContentBlock (McpToolInvocation, Thinking),
-│   │                       ParsedContentBlockId
+│   ├── parse/              ParsedContentBlock (McpToolInvocation, Thinking)
 │   │   └── sse/            ServerSentEventError, ServerSentEventException
 │   ├── queue/              QueuedMessageWorkerArgs, QueuedMessageWorker
-│   ├── share/              SharedChatModalBottomSheetDestination (4 destinations)
+│   ├── share/              SharedChatModalBottomSheetDestination
 │   └── MessageSseService
 │
 ├── chatlist/all/
@@ -157,10 +161,10 @@ app/src/main/java/com/anthropic/claude/
 │   └── overlays/           AllChatsListOverlay
 │
 ├── code/remote/
-│   ├── bottomsheet/        CodeRemoteBottomSheetDestination
+│   ├── bottomsheet/        CodeRemoteBottomSheetModels
 │   ├── notification/       CCRPermissionActionReceiver/Worker,
 │   │                       SessionReplyActionReceiver/Worker
-│   └── CodeRemoteSessionScreenParams
+│   └── CodeRemoteModels
 │
 ├── configs/
 │   ├── flags/              UploadConfig, FileUploadConfig, StreamSmoothingConfig,
@@ -168,74 +172,71 @@ app/src/main/java/com/anthropic/claude/
 │   │                       AgentChatOnboardingConfig, FlagConfigs
 │   └── GrowthBookConfigs, MobileObservabilityConfig
 │
-├── connector/auth/         McpAuthException (ExchangeFailed, Denied, StartFailed,
-│                           MissingCallbackParameters)
+├── connector/auth/         McpAuthException
 │
 ├── conway/
-│   ├── protocol/           ConwayProtocol (ClientRegistrationRequest/Response,
-│   │                       ConwayExtensionMeta, AgentState, StreamMessage sealed,
-│   │                       RichMessage sealed, ToolResultMessage,
-│   │                       ContainerHealthResponse)
-│   │                       ConwayProtocolExtras (ConwaySearchHit, PaginatedMessages,
-│   │                       ConwayErrorPayload, ConwayClientInfo, ContentBlock sealed,
-│   │                       ModelInfo, UiDemoAppDestination)
+│   ├── protocol/           ConwayProtocol, ConwayProtocolExtras
 │   └── AppForegroundDetector, ConwayAppScreen, ConwayScopeHolder, ConwayWakeWorker
 │
 ├── core/telemetry/         SilentException
 ├── deeplink/               DeepLinkActivity
-│
 ├── firebase/fcm/           AnthropicFirebaseMessagingService
-│                           (FcmIntentExtras 11 keys, CcrActions 3 actions,
-│                           17 FCM payload key constants)
-│
 ├── login/                  MagicLinkSentConfig
-│
 ├── mainactivity/           MainActivity, AssistantOverlayActivity, IntentRouter
 │
 ├── mcpapps/
 │   ├── transport/          JsonRpc, HostCapabilities, HostContext, InitializeResult,
 │   │                       McpCapabilities, UiResources
-│   └── McpAppModels (HydratedImageContent, McpAppFetchException,
-│       ModelContextTooLargeException, DomainValidationException)
+│   └── McpAppModels
 │
 ├── model/                  IncomingPayload
 │
 ├── models/
 │   ├── organization/
-│   │   ├── configtypes/    AvailableModelsConfig, ModelFallbacksConfig,
+│   │   ├── configtypes/    AvailableModelsConfig, ModelFallbacksConfig, BetaToolsConfig,
 │   │   │                   GroveConfig, GroveConfigStrings, MobileAppUseToolConfig,
 │   │   │                   SpeechInputConfig
 │   │   └── DefaultModelConfig
 │   └── StickyModelSelection
 │
-├── networking/
-│   ├── cookies/serializer/ SerializableCookie
-│   └── AnthropicApiClient
+├── networking/                                          ← NUEVA CAPA DE RED COMPLETA
+│   ├── ApiEndpoints.kt     55+ endpoint path constants agrupados por dominio:
+│   │                       Auth / Account / Consent / Chat / Files (Wiggle) /
+│   │                       Artifacts / Projects / Styles / Memory / Notifications /
+│   │                       Orbit / Tasks / Sessions / MCP / Experiences
+│   ├── AnthropicApiClient  OkHttp client — 30+ métodos tipados usando ApiEndpoints
+│   ├── NetworkInterceptors SessionInterceptor (cookie + headers) +
+│   │                       AuthExpiredInterceptor (401 → callback)
+│   ├── NetworkingModule    Factory para OkHttpClient + AnthropicApiClient
+│   ├── ApiResult           ApiResult<T> sealed (Success/Error/NetworkError) +
+│   │                       ClaudeApiError / ClaudeApiErrorDetail
+│   └── cookies/serializer/ SerializableCookie
 │
 ├── policy/                 PermissionsRationaleActivity
 │
 ├── project/
-│   ├── create/             CreateTemplateProjectScreenParams,
-│   │                       UploadMaterialsScreenParams
-│   ├── details/            ProjectDetailsScreenParams,
-│   │                       ProjectDetailsDialogDestination
+│   ├── create/             CreateTemplateProjectScreenParams, UploadMaterialsScreenParams
+│   ├── details/            ProjectDetailsScreenParams, ProjectDetailsDialogDestination
 │   │   └── custominstructions/ CustomInstructionsDialogRoute
 │   ├── knowledge/          ProjectKnowledgeParams
-│   └── menu/               ProjectItemMenuDialogDestination
+│   └── menu/               ProjectMenuModels
 │
-├── protos/push/            ConwayWakeRequest, OpenChatRequest (Wire protos)
+├── protos/push/            ConwayWakeRequest, OpenChatRequest,
+│                           OpenRequestProtos (OpenDispatchRequest, OpenOrbitRequest),
+│                           PushProtos (OpenCodeSessionRequest, PushOperationEnvelope),
+│                           LoggedInPushOperationsService (interface — 5 push handlers)
 │
 ├── sessions/
-│   ├── api/                ControlRequestContent (11 fields + PermissionUpdate)
-│   └── types/              SessionResource, SessionTypes, SessionContext,
-│                           SharedSessionData, BridgeEnvironmentInfo,
-│                           ControlResponsePayload, EnvironmentResource,
-│                           PostTurnSummary, SessionRequestModels
-│                           (CreateSessionParams, EnvironmentCreateRequest,
+│   ├── api/                ControlRequestContent
+│   └── types/              SessionResource, SessionTypes, SessionContext, SharedSessionData,
+│                           BridgeEnvironmentInfo, ControlResponsePayload, EnvironmentResource,
+│                           PostTurnSummary, GitProxyFileRequest,
+│                           GitProxyRequests (GetBatchBranchStatusRequest, GitProxyCompareRequest),
+│                           SessionRequestModels (CreateSessionParams, EnvironmentCreateRequest,
 │                           CreatePullRequestRequest)
 │
 ├── settings/
-│   ├── internal/           InternalSettingsScreens (4 destinations)
+│   ├── internal/           InternalSettingsScreens
 │   │   └── growthbook/     GrowthBookModels
 │   └── SettingsAppScreen
 │
@@ -247,31 +248,27 @@ app/src/main/java/com/anthropic/claude/
 ├── tool/
 │   ├── calendar/           CalendarModels
 │   ├── custom/             PhoneCallMonitorEvent
-│   ├── mcp/                ServerBaseFrame
-│   ├── model/              ToolModels (Tool sealed, SourceImage, SearchToolInput,
-│   │                       TaskStatusInput, PreviewData variants,
-│   │                       ToolInvocationResult, SearchMcpRegistryInput,
-│   │                       TaskListOutput),
-│   │                       DisplayToolInputs (PlacesMapDisplayV0Input,
-│   │                       RecipeDisplayV0Input, ChartDisplayV0Input,
-│   │                       EventCreateV0Input),
-│   │                       CalendarAlarmPhoneModels (EventSearchV0Input,
-│   │                       AlarmCreateV0Input, PhoneCallCompletedOutput),
+│   ├── mcp/                McpFrames (ToolsFrame, ResourcesFrame, PromptsFrame, ServerStub),
+│   │                       ServerBaseFrame
+│   ├── model/              ToolModels, DisplayToolInputs (PlacesMapDisplayV0Input,
+│   │                       RecipeDisplayV0Input, ChartDisplayV0Input, EventCreateV0Input),
+│   │                       CalendarAlarmPhoneModels (EventSearchV0Input, AlarmCreateV0Input,
+│   │                       PhoneCallCompletedOutput),
+│   │                       ComposeTaskInputs (MessageComposeV0Input, TaskProposeInput),
 │   │                       LocationFormMessageModels (UserLocationV0Output,
 │   │                       RequestFormInputFromUserInput, MessageComposeV1Input),
+│   │                       HealthConnectQueryResult, HealthMapModels (HealthToolsConfig,
+│   │                       HealthConnectQueryError, MapDisplayV0Input),
 │   │                       SuggestConnectorsOutput, TaskProposeOutput
-│   ├── ui/chat/            PhoneCallSheetDestination, FormSheetDestination
+│   ├── ui/chat/            ToolSheetDestinations
 │   └── ToolIdentifier
 │
 ├── types/
 │   ├── environment/        AppEnvironment (PRODUCTION/STAGING/DEVELOPMENT)
-│   └── strings/            DomainTypes (20+ inline value classes: ChatId,
-│                           ProjectId, MessageId, SessionId, AccountId...),
-│                           ModelId
+│   └── strings/            DomainTypes (20+ inline value classes), ModelId
 │
 ├── ui/
-│   ├── code/               SessionInputData, DiffLineComment,
-│   │                       PendingAskUserQuestionSelections
+│   ├── code/               CodeUiModels
 │   └── MainScreen
 │
 ├── wear/                   AuthSyncCredentials, PhoneWearableListenerService,
@@ -279,7 +276,7 @@ app/src/main/java/com/anthropic/claude/
 └── widget/                 ClaudeAppWidgetReceiver
 ```
 
-**Total: 236 Kotlin files across 80+ packages** (commit `2d17a97`)
+**Total: 278 Kotlin files across 85+ packages** (commit `6f55fdd`)
 
 ---
 
