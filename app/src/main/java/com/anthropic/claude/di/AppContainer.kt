@@ -1,6 +1,10 @@
 package com.anthropic.claude.di
 
 import android.content.Context
+import com.anthropic.claude.datastore.DraftDataStore
+import com.anthropic.claude.datastore.GrowthBookDataStore
+import com.anthropic.claude.datastore.SessionDataStore
+import com.anthropic.claude.datastore.UserPreferencesDataStore
 import com.anthropic.claude.db.ClaudeRoomDatabase
 import com.anthropic.claude.db.dao.ConversationDao
 import com.anthropic.claude.db.dao.MessageDao
@@ -73,5 +77,23 @@ class AppContainer(context: Context) {
 
     val experienceRepository: ExperienceRepository by lazy {
         ExperienceRepository(apiClient)
+    }
+
+    // ── DataStore ─────────────────────────────────────────────────────────────
+
+    val userPreferencesDataStore: UserPreferencesDataStore by lazy {
+        UserPreferencesDataStore(context.applicationContext)
+    }
+
+    val sessionDataStore: SessionDataStore by lazy {
+        SessionDataStore(context.applicationContext)
+    }
+
+    val growthBookDataStore: GrowthBookDataStore by lazy {
+        GrowthBookDataStore(context.applicationContext)
+    }
+
+    val draftDataStore: DraftDataStore by lazy {
+        DraftDataStore(context.applicationContext)
     }
 }
