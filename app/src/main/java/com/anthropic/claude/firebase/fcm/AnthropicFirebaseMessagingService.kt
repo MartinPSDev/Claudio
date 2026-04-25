@@ -7,7 +7,7 @@ import com.google.firebase.messaging.RemoteMessage
 
 /**
  * Intent extra keys for all Claude notification-related intents.
- * Extracted from AnthropicFirebaseMessagingService.smali bytecode.
+ * Extracted bytecode.
  */
 object FcmIntentExtras {
     const val ACCOUNT_ID          = "com.anthropic.claude.intent.extra.ACCOUNT_ID"
@@ -25,7 +25,7 @@ object FcmIntentExtras {
 
 /**
  * Broadcast action strings for Computer-Control Request (CCR) permission responses.
- * Extracted from AnthropicFirebaseMessagingService.smali bytecode.
+ * Extracted bytecode.
  */
 object CcrActions {
     const val APPROVE           = "com.anthropic.claude.action.CCR_PERMISSION_APPROVE"
@@ -114,8 +114,6 @@ class AnthropicFirebaseMessagingService : FirebaseMessagingService() {
         private const val CATEGORY_CCR       = "ccr"
         private const val CATEGORY_CONWAY    = "conway_wake"
         private const val CATEGORY_MARKETING = "marketing"
-
-        // FCM data payload keys (from Smali const-string analysis)
         const val KEY_PAYLOAD                      = "payload"
         const val KEY_BODY                         = "body"
         const val KEY_TITLE                        = "title"

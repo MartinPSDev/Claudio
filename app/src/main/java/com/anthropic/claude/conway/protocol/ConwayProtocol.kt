@@ -9,7 +9,7 @@ import kotlinx.serialization.json.JsonElement
 
 /**
  * Sent by the client to register itself on the Conway WebSocket session.
- * Fields from ClientRegistrationRequest.smali (27KB).
+ * Fields (27KB).
  */
 @Serializable
 data class ClientRegistrationRequest(
@@ -22,7 +22,7 @@ data class ClientRegistrationRequest(
 
 /**
  * Server response to a successful client registration.
- * Fields from ClientRegistrationResponse.smali (24KB).
+ * Fields (24KB).
  */
 @Serializable
 data class ClientRegistrationResponse(
@@ -36,7 +36,7 @@ data class ClientRegistrationResponse(
 
 /**
  * Metadata for a Conway extension (MCP server or built-in tool set).
- * Fields from ConwayExtensionMeta.smali (39KB).
+ * Fields (39KB).
  */
 @Serializable
 data class ConwayExtensionMeta(
@@ -57,7 +57,7 @@ data class ConwayExtensionMeta(
 
 /**
  * Current state of an agent within a Conway session.
- * Fields from AgentState.smali (26KB).
+ * Fields (26KB).
  */
 @Serializable
 data class AgentState(

@@ -100,7 +100,7 @@ data class ModelInfo(
 
 /**
  * Navigation destinations for the internal UI demo/component gallery app.
- * Extracted from UiDemoAppDestination.smali (7KB).
+ * Extracted (7KB).
  */
 sealed interface UiDemoAppDestination {
     /** Home screen of the demo app. */

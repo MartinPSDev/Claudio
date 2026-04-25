@@ -113,7 +113,6 @@ data class SessionContext(
 
 /**
  * Full server-side representation of a Claude Session (agentic / SDK sessions).
- * 17 fields from the 83 KB SessionResource.smali.
  */
 @Serializable
 data class SessionResource(

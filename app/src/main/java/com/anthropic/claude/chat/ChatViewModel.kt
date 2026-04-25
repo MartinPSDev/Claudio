@@ -38,135 +38,21 @@ import com.anthropic.claude.types.strings.MessageId
 import com.anthropic.claude.types.strings.ResearchMode
 
 /**
- * ChatViewModel — Reconstructed from ue2.smali (216KB, 305 XRefs)
+ * Primary ViewModel governing the entire chat screen lifecycle.
  *
- * This is the primary ViewModel governing the entire chat screen lifecycle.
- * It orchestrates message sending, SSE streaming, retry logic, MCP tool
+ * Orchestrates message sending, SSE streaming, retry logic, MCP tool
  * invocations, artifact management, polling recovery, and analytics tracking.
  *
- * ## Obfuscation Mapping (ue2 → ChatViewModel)
+ * 53 injected dependencies cover repositories, managers, and UI state providers.
  *
- * ### Key Fields (ue2.smali field → deduced purpose)
- * ```
- * B  : ChatScreenParams          → screenParams
- * C  : Context                   → context
- * D  : dnf                       → chatRepository
- * E  : r6                        → analyticsTracker
- * F  : qea                       → conversationRepository
- * G  : zea                       → messageRepository
- * H  : wd4                       → modelConfigProvider
- * I  : bx1                       → featureFlagProvider
- * J  : zx1                       → projectRepository
- * K  : r82                       → chatParser (SSE parser)
- * L  : y82                       → chatFormatter
- * M  : dm2                       → mcpManager
- * N  : wgb                       → toolDisplayManager
- * O  : gcb                       → artifactRepository
- * P  : geb                       → artifactSheetManager
- * Q  : k0e                       → rateLimitManager
- * R  : btd                       → thinkingModeManager
- * S  : v6e                       → compactionManager
- * T  : fde                       → notificationManager
- * U  : yr6                       → searchRepository
- * V  : sq2                       → organizationRepository
- * W  : ib0                       → knowledgeSourceManager
- * X  : vc0                       → draftManager
- * Y  : w22                       → messageQueueWorker
- * Z  : u3e                       → sendRetryManager
- * a0 : a3g                       → pollingRecoveryManager
- * b0 : p2f                       → sseConnectionManager
- * c0 : ha0                       → imageUploadManager
- * d0 : z5c                       → chatScreenDataProvider
- * e0 : c3f                       → permissionManager
- * f0 : v3g                       → wiggleManager
- * g0 : q5c                       → researchModeManager
- * h0 : jk9                       → pushNotificationManager
- * i0 : hs5                       → mcpAppManager
- * j0 : j0f                       → aiTasksNavigator
- * k0 : md9                       → speechInputManager
- * l0 : g0a                       → exportManager
- * m0 : zi2                       → sseEventProcessor
- * n0 : n3g                       → messageMetadataManager
- * o0 : ug0                       → toolInvocationHandler
- * p0 : ay1                       → chatFeedbackManager
- * q0 : lv4                       → coroutineScope
- * r0 : j19                       → sseStreamManager
- * s0 : xp7                       → messageAttachmentManager
- * t0 : a80                       → chatTitleManager
- * u0 : String                    → organizationId
- * v0 : wt9                       → networkMonitor
- * w0 : auth.b                    → authConnector
- * x0 : by4                       → mcpWebViewCacheManager
- * y0 : u2d                       → chatScreenState (state keeper)
- * z0 : ci2                       → sseEventProcessor (init block)
- * ```
- *
- * ### Key Methods (ue2.smali method → deduced purpose)
- * ```
- * B0()  → sendMessage(inputMode, text, attachments, files)
- * G0()  → retryMessage(text, attachments, files, inputMode, model, reason, attempts)
- * H0()  → sendMessageToExistingChat(text, attachments, files, inputMode, model, reason, request)
- * Z()   → getChatConversation(): ChatConversation
- * X()   → getArtifactSheetParams(metadata): InMessageArtifact
- * B()   → getMcpServerName(mcpServer, toolName): String
- * C()   → deleteMessage(messageId)
- * D()   → updateMessageFeedback(messageId, chatId)
- * K()   → reportToolResult(toolUseId, result, messageId)
- * C0()  → handleMcpToolApproval(toolUseId, approved, messageId, approvalOption)
- * F0()  → retryCompletion(reason)
- * H()   → loadInitialData()
- * L()   → handleSendError(error, attempts, retryConfig, continuation)
- * O()   → fetchMessages(forceRefresh, includeHistory, callback, continuation)
- * P0()  → reportCompactionOutcome(outcome, chatId)
- * Q()   → isFeatureEnabled(featureFlag): Boolean
- * R()   → isModelAvailable(modelId): Boolean
- * S()   → setThinkingBudget(budget)
- * S0()  → handleKnowledgeSource(source, enabled)
- * T()   → cancelCurrentStream()
- * U()   → selectMcpServer(serverId)
- * V()   → getMcpServer(serverId): McpServer
- * h0()  → getMcpToolInvocation(blockId): McpToolInvocation
- * onDestroy() → cleanup lifecycle
- * z0()  → startPollingRecovery(reason, staleThreshold, continuation)
- * ```
- *
- * ### State Fields (Lqma = MutableStateFlow, Lzn4 = MutableState, Lomd = Job)
- * ```
- * E0  : MutableStateFlow<Boolean>     → isLoading
- * L0  : MutableStateFlow<null>        → currentConversation
- * M0  : MutableStateFlow<Boolean>     → isSending
- * O0  : MutableStateFlow<null>        → currentError
- * P0  : MutableStateFlow<Boolean>     → isRetrying
- * S0  : MutableStateFlow<null>        → rateLimit
- * T0  : MutableStateFlow<null>        → thinkingState
- * U0  : MutableStateFlow<null>        → compactionState
- * W0  : MutableStateFlow<null>        → selectedProject
- * X0  : MutableStateFlow<null>        → draftMessage
- * Y0  : MutableStateFlow<null>        → mcpServers
- * Z0  : MutableStateFlow<null>        → artifacts
- * ```
- *
- * ### Collections
- * ```
- * F0  : LinkedHashMap      → toolDisplayContentCache (toolId → content)
- * H0  : LinkedHashSet      → activeToolUseIds
- * I0  : LinkedHashMap      → mcpToolResultCache
- * J0  : LinkedHashSet      → pendingMcpApprovals
- * f2  : LinkedHashSet      → cachedMcpWebViews
- * g2  : LinkedHashSet      → pendingToolReports
- * h2  : LinkedHashSet      → activeSubscriptions
- * ```
- *
- * ### Feature Flags Referenced
- * ```
- * mobile_chat_feedback_ui_enabled
- * mobile_chat_update_project_enabled
- * mobile_claude_speaks
- * mobile_enable_edit_message
- * mobile_message_queue
- * mobile_send_retry
- * mobile_use_ucr_for_wiggle
- * ```
+ * ### Feature Flags
+ * - `mobile_chat_feedback_ui_enabled`
+ * - `mobile_chat_update_project_enabled`
+ * - `mobile_claude_speaks`
+ * - `mobile_enable_edit_message`
+ * - `mobile_message_queue`
+ * - `mobile_send_retry`
+ * - `mobile_use_ucr_for_wiggle`
  */
 class ChatViewModel(
     // Core
@@ -241,7 +127,6 @@ class ChatViewModel(
 ) {
 
     // =========================================================================
-    // State (reconstructed from MutableStateFlow / MutableState fields)
     // =========================================================================
 
     // E0: MutableStateFlow<Boolean> = false → loading state
@@ -261,7 +146,6 @@ class ChatViewModel(
 
     /**
      * Send a new message in the chat.
-     * Mapped from: B0(ue2, InputMode, String, List, List)
      *
      * Constructs a ChatCompletionRequest with the given input mode,
      * text content, image attachments, and file attachments, then
@@ -279,7 +163,6 @@ class ChatViewModel(
 
     /**
      * Retry sending a message after failure.
-     * Mapped from: G0(ue2, String, List, List, InputMode, String, RetryCompletionReason, Int)
      */
     fun retryMessage(
         text: String,
@@ -295,7 +178,6 @@ class ChatViewModel(
 
     /**
      * Send message to an existing chat conversation.
-     * Mapped from: H0(String, List, List, InputMode, String, RetryCompletionReason, CreateChatRequest)
      *
      * Guards against concurrent sends with:
      * "sendMessageToExistingChat called while prior send is still active"
@@ -314,7 +196,6 @@ class ChatViewModel(
 
     /**
      * Get the current chat conversation.
-     * Mapped from: Z() → ChatConversation
      */
     fun getChatConversation(): ChatConversation? {
         TODO("Reconstructed from Z()")
@@ -322,7 +203,6 @@ class ChatViewModel(
 
     /**
      * Cancel the current SSE stream.
-     * Mapped from: T()
      */
     fun cancelCurrentStream() {
         TODO("Reconstructed from T() — cancels active SSE streaming job")
@@ -334,7 +214,6 @@ class ChatViewModel(
 
     /**
      * Delete a message by ID.
-     * Mapped from: C(ue2, String)
      */
     fun deleteMessage(messageId: String) {
         TODO("Reconstructed from C()")
@@ -342,7 +221,6 @@ class ChatViewModel(
 
     /**
      * Update feedback on a message.
-     * Mapped from: D(ue2, String, String)
      */
     fun updateMessageFeedback(messageId: String, chatId: String) {
         TODO("Reconstructed from D()")
@@ -351,7 +229,6 @@ class ChatViewModel(
     /**
      * Check if a message can be found by UUID.
      * Error string: "Cannot find message with UUID "
-     * Mapped from internal usage in multiple methods.
      */
     fun findMessageByUuid(uuid: String): ChatMessage? {
         TODO("Referenced via 'Cannot find message with UUID' error")
@@ -363,7 +240,6 @@ class ChatViewModel(
 
     /**
      * Get MCP server by ID.
-     * Mapped from: V(fna) → McpServer
      */
     fun getMcpServer(serverId: Any): McpServer? {
         TODO("Reconstructed from V()")
@@ -371,7 +247,6 @@ class ChatViewModel(
 
     /**
      * Get MCP server display name.
-     * Mapped from: B(ue2, McpServer, String) → String
      */
     fun getMcpServerName(server: McpServer, toolName: String): String {
         TODO("Reconstructed from B()")
@@ -379,7 +254,6 @@ class ChatViewModel(
 
     /**
      * Handle MCP tool approval/denial.
-     * Mapped from: C0(ue2, String, Boolean, String, McpToolApprovalOption)
      */
     fun handleMcpToolApproval(
         toolUseId: String,
@@ -392,7 +266,6 @@ class ChatViewModel(
 
     /**
      * Get MCP tool invocation by content block ID.
-     * Mapped from: h0(ParsedContentBlockId) → McpToolInvocation
      */
     fun getMcpToolInvocation(blockId: ParsedContentBlockId): ParsedContentBlock.McpToolInvocation? {
         TODO("Reconstructed from h0()")
@@ -400,7 +273,6 @@ class ChatViewModel(
 
     /**
      * Report tool invocation result.
-     * Mapped from: K(ue2, String, tze, String)
      * Error string: "Skipped tool report for "
      */
     fun reportToolResult(toolUseId: String, result: Any, messageId: String) {
@@ -413,7 +285,6 @@ class ChatViewModel(
 
     /**
      * Get artifact bottom sheet params for in-message artifact.
-     * Mapped from: X(ArtifactMetadata) → InMessageArtifact
      */
     fun getArtifactSheetParams(metadata: ArtifactMetadata): ArtifactBottomSheetParams.InMessageArtifact? {
         TODO("Reconstructed from X()")
@@ -421,7 +292,6 @@ class ChatViewModel(
 
     /**
      * Check if an artifact sheet can be opened.
-     * Mapped from: u0(ArtifactBottomSheetParams) → Boolean
      */
     fun canOpenArtifactSheet(params: ArtifactBottomSheetParams): Boolean {
         TODO("Reconstructed from u0()")
@@ -429,7 +299,6 @@ class ChatViewModel(
 
     /**
      * Get list of artifacts for bottom sheet.
-     * Mapped from: v(ArtifactBottomSheetParams) → List
      */
     fun getArtifactsForSheet(params: ArtifactBottomSheetParams): List<Any> {
         TODO("Reconstructed from v()")
@@ -441,7 +310,6 @@ class ChatViewModel(
 
     /**
      * Check if a feature flag is enabled.
-     * Mapped from: Q(String) → Boolean
      *
      * Known flags:
      * - mobile_chat_feedback_ui_enabled
@@ -458,7 +326,6 @@ class ChatViewModel(
 
     /**
      * Check if a model is available.
-     * Mapped from: R(String) → Boolean
      */
     fun isModelAvailable(modelId: String): Boolean {
         TODO("Reconstructed from R()")
@@ -470,7 +337,6 @@ class ChatViewModel(
 
     /**
      * Handle send error with retry logic.
-     * Mapped from: L(ue2, Throwable, Int, SendRetryConfig, continuation)
      *
      * Strings: "onSendRetryAttempt without prior onSendRetryStarted",
      *          "SendRetry: attempt ", "shouldRetrySend called outside Sending: "
@@ -485,7 +351,6 @@ class ChatViewModel(
 
     /**
      * Start polling recovery after SSE disconnect.
-     * Mapped from: z0(PollingRecoveryTriggerReason, Long?, continuation)
      *
      * Strings: "Polling recovery: detected trigger=", "Polling recovery: starting",
      *          "Polling recovery: finished, outcome=", "Polling recovery: skipped, message is stale"
@@ -499,7 +364,6 @@ class ChatViewModel(
 
     /**
      * Report retry completion.
-     * Mapped from: F0(RetryCompletionReason)
      */
     fun retryCompletion(reason: ChatEvents.RetryCompletionReason) {
         TODO("Reconstructed from F0()")
@@ -511,7 +375,6 @@ class ChatViewModel(
 
     /**
      * Report compaction outcome.
-     * Mapped from: P0(CompactionOutcome, String)
      */
     fun reportCompactionOutcome(
         outcome: ChatEvents.CompactionOutcome,
@@ -522,7 +385,6 @@ class ChatViewModel(
 
     /**
      * Get permission category for analytics.
-     * Mapped from: q0(String) → MobileAppUsePermissionCategory
      */
     fun getPermissionCategory(permission: String): MobileAppUseEvents.MobileAppUsePermissionCategory {
         TODO("Reconstructed from q0()")
@@ -534,7 +396,6 @@ class ChatViewModel(
 
     /**
      * Set thinking budget.
-     * Mapped from: S(Int)
      */
     fun setThinkingBudget(budget: Int) {
         TODO("Reconstructed from S()")
@@ -546,7 +407,6 @@ class ChatViewModel(
 
     /**
      * Handle knowledge source toggle.
-     * Mapped from: S0(KnowledgeSource, Boolean)
      */
     fun handleKnowledgeSource(source: KnowledgeSource, enabled: Boolean) {
         TODO("Reconstructed from S0()")
@@ -558,7 +418,6 @@ class ChatViewModel(
 
     /**
      * Handle notification permission request and analytics.
-     * Mapped from: r0(String, String, String, String, Boolean)
      * References: "android.permission.POST_NOTIFICATIONS"
      */
     fun handlePermissionResult(
@@ -577,7 +436,6 @@ class ChatViewModel(
 
     /**
      * Cleanup on ViewModel destruction.
-     * Mapped from: onDestroy()
      *
      * String: "Destroying "
      */

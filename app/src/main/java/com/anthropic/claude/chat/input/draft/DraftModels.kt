@@ -9,7 +9,7 @@ import kotlinx.serialization.json.JsonElement
 /**
  * A persisted draft of a message being composed in the chat input.
  * Survives app backgrounding and is stored locally per conversation.
- * Fields from DraftMessage.smali (46KB).
+ * Fields (46KB).
  */
 @Serializable
 data class DraftMessage(
@@ -27,7 +27,7 @@ data class DraftMessage(
 /**
  * A send request that is buffered locally and awaiting dispatch.
  * Queued when the network is unavailable or the app is backgrounded.
- * Fields from QueuedSendRequest.smali (46KB).
+ * Fields (46KB).
  */
 @Serializable
 data class QueuedSendRequest(

@@ -51,7 +51,7 @@ data class TaskContextAttachment(
 
 /**
  * A single step within a task, tracking granular progress.
- * 11 fields from TaskStepResponse.smali (42 KB).
+ * 11 fields (42 KB).
  */
 @Serializable
 data class TaskStepResponse(
@@ -69,7 +69,7 @@ data class TaskStepResponse(
 )
 
 /**
- * Full task record. 12 fields from TaskResponse.smali (54 KB).
+ * Full task record. 12 fields (54 KB).
  */
 @Serializable
 data class TaskResponse(

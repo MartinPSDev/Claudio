@@ -7,7 +7,7 @@ import androidx.work.Worker
 /**
  * Arguments passed to [QueuedMessageWorker] via WorkManager Data.
  * Serialized as a JSON blob under the "args" key.
- * Fields from QueuedMessageWorker$Args.smali (21KB).
+ * Fields (21KB).
  */
 data class QueuedMessageWorkerArgs(
     val chatId: ChatId? = null,
@@ -30,7 +30,6 @@ data class QueuedMessageWorkerArgs(
  * WorkManager worker that dispatches a queued chat message.
  * Handles offline-queued sends: retries when connectivity is restored.
  *
- * Lifecycle (from QueuedMessageWorker.smali, 11KB):
  * 1. Deserialize [QueuedMessageWorkerArgs] from input Data.
  * 2. Validate expiry — cancel if expired.
  * 3. Execute the send request via the network layer.

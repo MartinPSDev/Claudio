@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 /**
  * Request to log a single analytics event.
- * Mapped from EventLoggingRequest.smali.
  */
 @Serializable
 data class EventLoggingRequest(
@@ -14,7 +13,6 @@ data class EventLoggingRequest(
 
 /**
  * Request to log a batch of analytics events.
- * Mapped from BatchEventLoggingRequest.smali.
  */
 @Serializable
 data class BatchEventLoggingRequest(
@@ -23,7 +21,6 @@ data class BatchEventLoggingRequest(
 
 /**
  * Authentication info attached to analytics events.
- * Mapped from EventAuth.smali.
  */
 @Serializable
 data class EventAuth(
@@ -34,7 +31,6 @@ data class EventAuth(
 
 /**
  * Metadata about an experiment for analytics tracking.
- * Mapped from ExperimentMetadata.smali.
  */
 @Serializable
 data class ExperimentMetadata(

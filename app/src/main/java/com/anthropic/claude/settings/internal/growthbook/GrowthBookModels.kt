@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 /**
  * The data type of a GrowthBook feature flag value.
- * Exact enum values extracted from GateKind.smali bytecode.
+ * Exact enum values extracted bytecode.
  */
 @Serializable
 enum class GateKind {

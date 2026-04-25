@@ -3,7 +3,7 @@ package com.anthropic.claude.ui.code
 /**
  * Tracks selected answers and navigation state for a multi-question
  * AskUser interaction within the remote code session.
- * Fields from PendingAskUserQuestionSelections.smali (25KB).
+ * Fields (25KB).
  */
 data class PendingAskUserQuestionSelections(
     val toolUseId: String,
@@ -17,7 +17,7 @@ data class PendingAskUserQuestionSelections(
 
 /**
  * A comment on a specific line in a code diff view.
- * Fields from DiffLineComment.smali (28KB).
+ * Fields (28KB).
  */
 data class DiffLineComment(
     val id: String,
@@ -36,7 +36,7 @@ data class DiffLineComment(
 /**
  * Complete input state for a remote code editor session.
  * Persisted locally to survive app backgrounding.
- * Fields from SessionInputData.smali (34KB).
+ * Fields (34KB).
  */
 data class SessionInputData(
     val sessionId: String,

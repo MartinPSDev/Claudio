@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 
 /**
  * A calendar event entry returned by the calendar integration tool.
- * Fields extracted from tool/calendar/EventInfo.smali (20KB).
  */
 @Serializable
 data class EventInfo(

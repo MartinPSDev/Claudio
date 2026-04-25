@@ -80,7 +80,6 @@ sealed interface BellApiClientMessage {
 
 /**
  * Thrown when the microphone audio capture fails.
- * From audio/input/MicrophoneAudioException.smali.
  */
 class MicrophoneAudioException(
     message: String,

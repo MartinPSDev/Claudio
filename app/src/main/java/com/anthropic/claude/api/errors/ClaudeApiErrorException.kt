@@ -2,7 +2,6 @@ package com.anthropic.claude.api.errors
 
 /**
  * Exception thrown when the Claude API returns an error response.
- * Mapped from ClaudeApiErrorException.smali.
  *
  * The error field (A in Smali, type kr2) contains the parsed API error body.
  * The message is constructed as: "$contextMessage: $error" or just "$error".

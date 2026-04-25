@@ -5,7 +5,6 @@ import kotlinx.serialization.json.JsonClassDiscriminator
 
 /**
  * Sealed interface for experience content types.
- * Mapped from ExperienceContent.smali.
  */
 @Serializable
 @JsonClassDiscriminator("type")
@@ -13,7 +12,6 @@ sealed interface ExperienceContent
 
 /**
  * Data for tracking experience actions.
- * Mapped from ExperienceTrackActionData.smali.
  */
 @Serializable
 data class ExperienceTrackActionData(
@@ -23,7 +21,6 @@ data class ExperienceTrackActionData(
 
 /**
  * Client-side experience action types.
- * Mapped from ExperienceClientAction.smali.
  */
 @Serializable
 data class ExperienceClientAction(

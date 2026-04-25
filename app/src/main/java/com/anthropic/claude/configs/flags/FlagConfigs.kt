@@ -54,7 +54,7 @@ data class FileUploadConfig(
 
 /**
  * Upload retry + chunking parameters for the file upload pipeline.
- * From UploadConfig.smali (24 KB).
+ * (24 KB).
  */
 @Serializable
 data class UploadConfig(

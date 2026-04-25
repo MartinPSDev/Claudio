@@ -5,14 +5,12 @@ import kotlinx.serialization.Serializable
 
 /**
  * Tool definition - sealed class with KnownTool and CustomTool variants.
- * Mapped from Tool.smali, Tool$KnownTool.smali, Tool$CustomTool.smali.
  */
 @Serializable
 sealed class Tool {
 
     /**
      * A known/built-in tool type (e.g., "computer", "text_editor").
-     * Mapped from Tool$KnownTool.smali.
      * Fields: name (String), type (String)
      */
     @Serializable
@@ -23,7 +21,6 @@ sealed class Tool {
 
     /**
      * A custom tool definition with full schema.
-     * Mapped from Tool$CustomTool.smali.
      * Fields: name, title, description, input_schema (InputSchema)
      */
     @Serializable
@@ -38,7 +35,6 @@ sealed class Tool {
 
 /**
  * Input schema for custom tool definitions.
- * Mapped from InputSchema.smali (21KB).
  * Represents a JSON Schema object type with properties and required fields.
  */
 @Serializable
