@@ -72,3 +72,25 @@ data class EventSearchInputDescriptions(
     @SerialName("include_all_day")   val includeAllDay: String? = null,
     val limit: String? = null,
 )
+
+/** Tool input descriptions for the event-delete tool. */
+@Serializable
+data class EventDeleteInputDescriptions(
+    @SerialName("tool_description") val toolDescription: String? = null,
+    @SerialName("event_id")         val eventId: String? = null,
+    @SerialName("calendar_id")      val calendarId: String? = null,
+    @SerialName("recurrence_span")  val recurrenceSpan: String? = null,
+)
+
+/** Tool input descriptions for the event-update tool. */
+@Serializable
+data class EventUpdateInputDescriptions(
+    @SerialName("tool_description") val toolDescription: String? = null,
+    @SerialName("event_id")         val eventId: String? = null,
+    @SerialName("calendar_id")      val calendarId: String? = null,
+    val title: String? = null,
+    @SerialName("start_time")       val startTime: String? = null,
+    @SerialName("end_time")         val endTime: String? = null,
+    val location: String? = null,
+    val recurrence: String? = null,
+)

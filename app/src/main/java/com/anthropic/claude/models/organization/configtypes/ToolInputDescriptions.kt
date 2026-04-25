@@ -49,3 +49,12 @@ data class ChartDisplaySeriesItemDescription(
     val points: String? = null,
     val values: String? = null,
 )
+
+/**
+ * Array-level description for chart series.
+ */
+@Serializable
+data class ChartDisplaySeriesArrayDescription(
+    val description: String? = null,
+    val items: ChartDisplaySeriesItemDescription? = null,
+)
