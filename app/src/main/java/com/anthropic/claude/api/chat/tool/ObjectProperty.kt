@@ -4,10 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-@SerialName("array")
-data class ArrayProperty(
+@SerialName("object")
+data class ObjectProperty(
     override val description: String? = null,
-    val items: PropertyDefinition? = null,
-    val minItems: Int? = null,
-    val maxItems: Int? = null
+    val properties: Map<String, PropertyDefinition>? = null,
+    val required: List<String>? = null
 ) : PropertyDefinition

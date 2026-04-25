@@ -1,31 +1,32 @@
 package com.anthropic.claude.api.experience
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonClassDiscriminator
 
 /**
- * A bullet point item shown inside an experience/onboarding card.
- * [icon] is an icon identifier; [text] is the display string.
+ * Sealed interface for experience content types.
+ * Mapped from ExperienceContent.smali.
  */
 @Serializable
-data class ExperienceBullet(
-    val icon: String? = null,
-    val text: String,
+@JsonClassDiscriminator("type")
+sealed interface ExperienceContent
+
+/**
+ * Data for tracking experience actions.
+ * Mapped from ExperienceTrackActionData.smali.
+ */
+@Serializable
+data class ExperienceTrackActionData(
+    val action: String? = null,
+    val properties: Map<String, String>? = null
 )
 
 /**
- * A client-side action triggered by an experience card interaction.
- * The [type] field discriminates the action (e.g. "navigate", "dismiss").
+ * Client-side experience action types.
+ * Mapped from ExperienceClientAction.smali.
  */
 @Serializable
 data class ExperienceClientAction(
-    val type: String? = null,
-    val payload: String? = null,
-)
-
-/**
- * Response carrying a list of client actions to execute after an experience event.
- */
-@Serializable
-data class ExperienceActionResponse(
-    val actions: List<ExperienceClientAction> = emptyList(),
+    val type: String,
+    val data: ExperienceTrackActionData? = null
 )
