@@ -3,28 +3,38 @@ package com.anthropic.claude.api.notification
 import kotlinx.serialization.Serializable
 
 /**
- * Parameters for tracking a push notification open event.
- * Contains a signed payload from the FCM notification data.
+ * Notification preferences wrapper.
  */
 @Serializable
-data class NotificationParams(
-    val signedPayload: String,
+data class Preferences(
+    val feature_preference: FeaturePreference? = null
 )
 
 /**
- * Preference toggle for a specific notification channel.
+ * Per-feature notification preference.
  */
 @Serializable
-data class NotificationPreferencesSchema(
+data class FeaturePreference(
     val enabled: Boolean = true,
-    val channelId: String? = null,
+    val channels: List<String>? = null
 )
 
 /**
- * Request to send a test push notification.
+ * Request to update notification preferences.
  */
 @Serializable
-data class TrackPushOpenRequest(
-    val signedPayload: String,
-    val notificationId: String? = null,
+data class NotificationPreferencesUpdateParams(
+    val preferences: Preferences? = null,
+    val device_token: String? = null,
+    val platform: String? = null
+)
+
+/**
+ * Request to upsert notification preferences.
+ */
+@Serializable
+data class NotificationPreferencesUpsertParams(
+    val preferences: Preferences? = null,
+    val device_token: String? = null,
+    val platform: String? = null
 )
