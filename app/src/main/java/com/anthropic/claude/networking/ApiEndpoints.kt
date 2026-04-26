@@ -14,6 +14,7 @@ object ApiEndpoints {
     const val VERIFY_PHONE_CODE          = "/api/auth/verify_phone_code"
     const val TRUSTED_DEVICES            = "/api/auth/trusted_devices"
     const val LOGOUT                     = "/api/auth/logout"
+    const val ENTERPRISE_SSO_CALLBACK    = "/api/enterprise_auth/sso_callback"
 
     // ── Account ─────────────────────────────────────────────────────────────
     const val ACCOUNT                    = "/api/account"

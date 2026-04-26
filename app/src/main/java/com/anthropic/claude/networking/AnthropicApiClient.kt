@@ -94,6 +94,9 @@ class AnthropicApiClient(
     suspend fun verifyGoogleMobile(request: VerifyGoogleMobileRequest): Response =
         post(ApiEndpoints.VERIFY_GOOGLE_MOBILE, request.toBody())
 
+    suspend fun verifySsoCallback(code: String, state: String): Response =
+        post(ApiEndpoints.ENTERPRISE_SSO_CALLBACK, mapOf("code" to code, "state" to state).toBody())
+
     suspend fun logout(): Response =
         post(ApiEndpoints.LOGOUT, "{}".toRequestBody(JSON_MEDIA_TYPE))
 

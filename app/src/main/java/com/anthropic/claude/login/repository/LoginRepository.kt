@@ -14,4 +14,7 @@ interface LoginRepository {
     suspend fun sendMagicLink(request: SendMagicLinkRequest): ApiResult<SendMagicLinkResponse>
     suspend fun verifyMagicLink(request: VerifyMagicLinkRequest): ApiResult<VerifyResponse>
     suspend fun verifyGoogleMobile(request: VerifyGoogleMobileRequest): ApiResult<VerifyResponse>
+
+    /** Handles the SSO callback from enterprise identity providers. */
+    suspend fun verifySsoCallback(code: String, state: String): ApiResult<VerifyResponse>
 }
