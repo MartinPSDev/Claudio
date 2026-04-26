@@ -44,6 +44,7 @@ object ApiEndpoints {
     const val MESSAGE_FLAGS              = "/api/organizations/{org_uuid}/chat_conversations/{chat_uuid}/chat_messages/{msg}/flags"
     const val TASK_MOBILE_STATUS         = "/api/organizations/{org_uuid}/chat_conversations/{chat_uuid}/task/{task_id}/mobile_status"
     const val TASK_STOP                  = "/api/organizations/{org_uuid}/chat_conversations/{chat_uuid}/task/{task_id}/stop"
+    const val CHAT_MESSAGES              = "/api/organizations/{org}/chat_conversations/{chat}/chat_messages"
 
     // ── File Upload (Wiggle) ─────────────────────────────────────────────────
     const val FILES_PREPARE_UPLOAD       = "/api/organizations/{org_uuid}/conversations/{conv_uuid}/files/prepare-upload"
@@ -99,10 +100,13 @@ object ApiEndpoints {
 
     // ── MCP ──────────────────────────────────────────────────────────────────
     const val MCP_AUTH_CALLBACK          = "/api/mcp/auth_callback"
+    const val MCP_SERVERS                = "/api/mcp/servers"
 
     // ── Feedback ─────────────────────────────────────────────────────────────
     const val APP_FEEDBACK               = "/api/organizations/{org}/app_feedback"
 
-    // ── Experiences ──────────────────────────────────────────────────────────
+    // ── Experiences ─────────────────────────────────────────────────────────────
     const val EXPERIENCES                = "/api/experiences"
+    const val ORG_EXPERIENCES            = "/api/organizations/{org}/experiences"
+    const val ORG_EXPERIENCES_TRACK      = "/api/organizations/{org}/experiences/track"
 }

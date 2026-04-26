@@ -179,6 +179,15 @@ class AnthropicApiClient(
     suspend fun deleteProject(orgId: String, projectId: String): Response =
         delete(ApiEndpoints.PROJECT.replace("{org_uuid}", orgId).replace("{project_uuid}", projectId), orgId = orgId)
 
+    suspend fun getProjectDocs(orgId: String, projectId: String): Response =
+        get(ApiEndpoints.PROJECT_DOCS.replace("{org_uuid}", orgId).replace("{project_uuid}", projectId), orgId)
+
+    suspend fun createProjectDoc(orgId: String, projectId: String, request: ProjectDocsCreateParams): Response =
+        post(ApiEndpoints.PROJECT_DOCS.replace("{org_uuid}", orgId).replace("{project_uuid}", projectId), request.toBody(), orgId)
+
+    suspend fun deleteProjectDoc(orgId: String, projectId: String, docId: String): Response =
+        delete(ApiEndpoints.PROJECT_DOC.replace("{org_uuid}", orgId).replace("{project_uuid}", projectId).replace("{doc_uuid}", docId), orgId = orgId)
+
     // ── Styles ───────────────────────────────────────────────────────────────
 
     suspend fun getStyles(orgId: String): Response =
@@ -201,10 +210,21 @@ class AnthropicApiClient(
     suspend fun getNotificationPreferences(orgId: String): Response =
         get(ApiEndpoints.NOTIFICATION_PREFERENCES.replace("{org_uuid}", orgId), orgId)
 
+    // ── Chat Messages ─────────────────────────────────────────────────────────
+
+    suspend fun getMessages(orgId: String, chatId: String): Response =
+        get(ApiEndpoints.CHAT_MESSAGES.org(orgId).replace("{chat}", chatId), orgId)
+
     // ── MCP ──────────────────────────────────────────────────────────────────
 
     suspend fun createMcpRemoteServer(request: CreateMcpRemoteServerRequest): Response =
-        post("/api/mcp/servers", request.toBody())
+        post(ApiEndpoints.MCP_SERVERS, request.toBody())
+
+    suspend fun deleteMcpServer(serverId: String): Response =
+        delete("${ApiEndpoints.MCP_SERVERS}/$serverId")
+
+    suspend fun getMcpServerTools(serverId: String): Response =
+        get("${ApiEndpoints.MCP_SERVERS}/$serverId/tools")
 
     suspend fun attachMcpPrompt(orgId: String, chatId: String, request: AttachMcpPromptRequest): Response =
         post("/api/organizations/$orgId/chat_conversations/$chatId/mcp_prompt", request.toBody(), orgId)
@@ -212,6 +232,13 @@ class AnthropicApiClient(
     // ── Experiences ──────────────────────────────────────────────────────────
 
     suspend fun getExperiences(): Response = get(ApiEndpoints.EXPERIENCES)
+
+    suspend fun getOrgExperiences(orgId: String): Response =
+        get(ApiEndpoints.ORG_EXPERIENCES.replace("{org}", orgId), orgId)
+
+    suspend fun trackExperience(orgId: String, payload: String): Response =
+        post(ApiEndpoints.ORG_EXPERIENCES_TRACK.replace("{org}", orgId),
+            payload.toRequestBody(JSON_MEDIA_TYPE), orgId)
 
     companion object {
         const val BASE_URL_PRODUCTION = "https://claude.ai"
