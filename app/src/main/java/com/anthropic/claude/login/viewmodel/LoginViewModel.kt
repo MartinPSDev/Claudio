@@ -5,16 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anthropic.claude.analytics.AnalyticsTracker
 import com.anthropic.claude.analytics.events.LoginEvents
-import com.anthropic.claude.api.account.Account
 import com.anthropic.claude.api.login.SendMagicLinkRequest
 import com.anthropic.claude.api.login.VerifyGoogleMobileRequest
 import com.anthropic.claude.api.login.VerifyMagicLinkRequest
 import com.anthropic.claude.api.login.VerifyResponse
 import com.anthropic.claude.api.result.ApiResult
-import com.anthropic.claude.api.result.isSuccess
-import com.anthropic.claude.api.result.getOrNull
+import com.anthropic.claude.core.telemetry.SilentException
 import com.anthropic.claude.datastore.SessionDataStore
 import com.anthropic.claude.login.MagicLinkSentConfig
+import com.anthropic.claude.login.ManagedLoginProvider
 import com.anthropic.claude.login.repository.LoginRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +22,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
+private const val GOOGLE_ID_TOKEN_CREDENTIAL_TYPE =
+    "com.google.android.libraries.identity.googleid.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL"
 
 /** UI state for the login flow. */
 data class LoginUiState(
@@ -37,6 +39,7 @@ sealed class LoginEvent {
     data class NavigateToSso(val email: String, val ssoUrl: String) : LoginEvent()
     data class MagicLinkSent(val config: MagicLinkSentConfig) : LoginEvent()
     data class AuthenticationSuccess(val accountId: String, val orgId: String) : LoginEvent()
+    data class ShowManagedLoginError(val messageResId: Int) : LoginEvent()
 }
 
 /**
@@ -46,7 +49,8 @@ class LoginViewModel(
     private val clientId: String = "com.anthropic.claude",
     private val loginRepository: LoginRepository,
     private val sessionDataStore: SessionDataStore,
-    private val analyticsTracker: AnalyticsTracker
+    private val analyticsTracker: AnalyticsTracker,
+    private val managedLoginProvider: ManagedLoginProvider,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -86,7 +90,7 @@ class LoginViewModel(
                 is ApiResult.Success -> {
                     val response = result.data
                     val ssoUrl = response.sso_url
-                    
+
                     if (ssoUrl != null) {
                         _events.emit(LoginEvent.NavigateToSso(email, ssoUrl))
                     } else {
@@ -94,7 +98,7 @@ class LoginViewModel(
                             LoginEvents.EmailLoginMagicLinkSent(),
                             LoginEvents.EmailLoginMagicLinkSent.serializer()
                         )
-                        
+
                         val config = response.fallback_code_configuration
                         val sentConfig = MagicLinkSentConfig(
                             email = email,
@@ -122,10 +126,17 @@ class LoginViewModel(
         }
     }
 
-    fun verifyGoogleSignIn(idToken: String) {
+    /**
+     * Initiates Google Sign-In verification.
+     * [credentialType] must equal [GOOGLE_ID_TOKEN_CREDENTIAL_TYPE] to proceed.
+     * [idToken] is the token extracted from the Google credential bundle.
+     */
+    fun verifyGoogleSignIn(credentialType: String, idToken: String) {
+        if (credentialType != GOOGLE_ID_TOKEN_CREDENTIAL_TYPE) return
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            
+
             val request = VerifyGoogleMobileRequest(
                 id_token = idToken,
                 recaptcha_token = null,
@@ -150,7 +161,7 @@ class LoginViewModel(
                     _uiState.value = _uiState.value.copy(error = "Unknown error")
                 }
             }
-            
+
             _uiState.value = _uiState.value.copy(isLoading = false)
         }
     }
@@ -158,7 +169,7 @@ class LoginViewModel(
     fun verifyMagicLink(nonce: String, encodedEmail: String = "") {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            
+
             val request = VerifyMagicLinkRequest(
                 token = nonce,
                 recaptcha_token = null,
@@ -209,11 +220,22 @@ class LoginViewModel(
                 displayEmail = email,
                 bootstrapTs = System.currentTimeMillis().toString()
             )
-            
+
             analyticsTracker.identify(accountId, orgId, email, null)
             _uiState.value = _uiState.value.copy(isAuthenticated = true)
             _events.emit(LoginEvent.AuthenticationSuccess(accountId, orgId))
+
         } else if (authState is VerifyResponse.AuthenticationState.MagicLink) {
+
+            if (!managedLoginProvider.isManagedLoginAllowed()) {
+                analyticsTracker.trackEvent(
+                    LoginEvents.ManagedLoginBlocked("magic_link"),
+                    LoginEvents.ManagedLoginBlocked.serializer()
+                )
+                _events.emit(LoginEvent.ShowManagedLoginError(com.anthropic.claude.R.string.managed_login_blocked_message))
+                return
+            }
+
             val config = authState.fallback_code_configuration
             val sentConfig = MagicLinkSentConfig(
                 email = authState.email_ZiuLfiY ?: "",
@@ -223,7 +245,9 @@ class LoginViewModel(
             )
             _uiState.value = _uiState.value.copy(magicLinkSent = true)
             _events.emit(LoginEvent.MagicLinkSent(sentConfig))
+
         } else {
+            SilentException("VerifyResponse Error: Cannot find account").report()
             _uiState.value = _uiState.value.copy(error = "Authentication failed")
         }
     }
