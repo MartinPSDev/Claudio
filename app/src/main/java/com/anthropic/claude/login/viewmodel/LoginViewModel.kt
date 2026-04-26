@@ -1,12 +1,26 @@
 package com.anthropic.claude.login.viewmodel
 
+import android.icu.util.TimeZone
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anthropic.claude.analytics.AnalyticsTracker
+import com.anthropic.claude.analytics.events.LoginEvents
+import com.anthropic.claude.api.account.Account
 import com.anthropic.claude.api.login.SendMagicLinkRequest
-import com.anthropic.claude.api.login.VerifyMagicLinkRequest
 import com.anthropic.claude.api.login.VerifyGoogleMobileRequest
+import com.anthropic.claude.api.login.VerifyMagicLinkRequest
+import com.anthropic.claude.api.login.VerifyResponse
+import com.anthropic.claude.api.result.ApiResult
+import com.anthropic.claude.api.result.isSuccess
+import com.anthropic.claude.api.result.getOrNull
+import com.anthropic.claude.datastore.SessionDataStore
+import com.anthropic.claude.login.MagicLinkSentConfig
+import com.anthropic.claude.login.repository.LoginRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -19,14 +33,27 @@ data class LoginUiState(
     val error: String? = null,
 )
 
+sealed class LoginEvent {
+    data class NavigateToSso(val email: String, val ssoUrl: String) : LoginEvent()
+    data class MagicLinkSent(val config: MagicLinkSentConfig) : LoginEvent()
+    data class AuthenticationSuccess(val accountId: String, val orgId: String) : LoginEvent()
+}
+
 /**
  * ViewModel for the login flow.
- * Handles magic-link sending, verification, and Google SSO.
  */
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val clientId: String = "com.anthropic.claude",
+    private val loginRepository: LoginRepository,
+    private val sessionDataStore: SessionDataStore,
+    private val analyticsTracker: AnalyticsTracker
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
+
+    private val _events = MutableSharedFlow<LoginEvent>()
+    val events: SharedFlow<LoginEvent> = _events.asSharedFlow()
 
     fun onEmailChanged(email: String) {
         _uiState.value = _uiState.value.copy(email = email, error = null)
@@ -35,26 +62,169 @@ class LoginViewModel : ViewModel() {
     fun sendMagicLink() {
         val email = _uiState.value.email.trim()
         if (email.isEmpty()) return
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
-            // TODO: apiClient.sendMagicLink(SendMagicLinkRequest(email = email))
-            _uiState.value = _uiState.value.copy(isLoading = false, magicLinkSent = true)
-        }
-    }
 
-    fun verifyMagicLink(nonce: String, encodedEmail: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            // TODO: apiClient.verifyMagicLink(VerifyMagicLinkRequest(credentials = ...))
-            _uiState.value = _uiState.value.copy(isLoading = false, isAuthenticated = true)
+            analyticsTracker.trackEvent(
+                LoginEvents.EmailLoginSendingMagicLink(),
+                LoginEvents.EmailLoginSendingMagicLink.serializer()
+            )
+
+            val utcOffset = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 1000
+
+            val request = SendMagicLinkRequest(
+                email_address = email,
+                recaptcha_token = null,
+                recaptcha_site_key = null,
+                utc_offset = utcOffset,
+                source = null,
+                client = null,
+                login_intent = "magic_link"
+            )
+
+            when (val result = loginRepository.sendMagicLink(request)) {
+                is ApiResult.Success -> {
+                    val response = result.data
+                    val ssoUrl = response.sso_url
+                    
+                    if (ssoUrl != null) {
+                        _events.emit(LoginEvent.NavigateToSso(email, ssoUrl))
+                    } else {
+                        analyticsTracker.trackEvent(
+                            LoginEvents.EmailLoginMagicLinkSent(),
+                            LoginEvents.EmailLoginMagicLinkSent.serializer()
+                        )
+                        
+                        val config = response.fallback_code_configuration
+                        val sentConfig = MagicLinkSentConfig(
+                            email = email,
+                            codeLength = config?.length,
+                            codeCharset = config?.charset,
+                            showInputAfterDelay = config?.show_input_after_delay
+                        )
+                        _uiState.value = _uiState.value.copy(magicLinkSent = true)
+                        _events.emit(LoginEvent.MagicLinkSent(sentConfig))
+                    }
+                }
+                is ApiResult.Error -> {
+                    analyticsTracker.trackEvent(
+                        LoginEvents.EmailLoginMagicLinkSendError(),
+                        LoginEvents.EmailLoginMagicLinkSendError.serializer()
+                    )
+                    _uiState.value = _uiState.value.copy(error = "Error sending magic link")
+                }
+                else -> {
+                    _uiState.value = _uiState.value.copy(error = "Unknown error")
+                }
+            }
+
+            _uiState.value = _uiState.value.copy(isLoading = false)
         }
     }
 
     fun verifyGoogleSignIn(idToken: String) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            // TODO: apiClient.verifyGoogleMobile(VerifyGoogleMobileRequest(token = idToken))
-            _uiState.value = _uiState.value.copy(isLoading = false, isAuthenticated = true)
+            
+            val request = VerifyGoogleMobileRequest(
+                id_token = idToken,
+                recaptcha_token = null,
+                recaptcha_site_key = null,
+                source = null,
+                client = null,
+                login_intent = null
+            )
+
+            when (val result = loginRepository.verifyGoogleMobile(request)) {
+                is ApiResult.Success -> {
+                    handleVerifyResponse(result.data)
+                }
+                is ApiResult.Error -> {
+                    analyticsTracker.trackEvent(
+                        LoginEvents.SignInWithGoogleError(),
+                        LoginEvents.SignInWithGoogleError.serializer()
+                    )
+                    _uiState.value = _uiState.value.copy(error = "Google Sign In Error")
+                }
+                else -> {
+                    _uiState.value = _uiState.value.copy(error = "Unknown error")
+                }
+            }
+            
+            _uiState.value = _uiState.value.copy(isLoading = false)
+        }
+    }
+
+    fun verifyMagicLink(nonce: String, encodedEmail: String = "") {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            
+            val request = VerifyMagicLinkRequest(
+                token = nonce,
+                recaptcha_token = null,
+                recaptcha_site_key = null,
+                source = null,
+                client = null,
+                login_intent = null
+            )
+
+            when (val result = loginRepository.verifyMagicLink(request)) {
+                is ApiResult.Success -> {
+                    handleVerifyResponse(result.data)
+                }
+                is ApiResult.Error -> {
+                    _uiState.value = _uiState.value.copy(error = "Invalid magic link")
+                }
+                else -> {
+                    _uiState.value = _uiState.value.copy(error = "Unknown error")
+                }
+            }
+
+            _uiState.value = _uiState.value.copy(isLoading = false)
+        }
+    }
+
+    private suspend fun handleVerifyResponse(response: VerifyResponse) {
+        val ssoUrl = response.sso_url
+        if (ssoUrl != null) {
+            _events.emit(LoginEvent.NavigateToSso(_uiState.value.email, ssoUrl))
+            return
+        }
+
+        val authState = response.state
+        val account = if (authState is VerifyResponse.AuthenticationState.Authenticated) {
+            authState.account
+        } else {
+            response.account
+        }
+
+        if (account != null) {
+            val orgId = account.organization?.uuid ?: ""
+            val accountId = account.uuid_islZJdo ?: ""
+            val email = account.email_address_ZiuLfiY ?: ""
+
+            sessionDataStore.saveSession(
+                accountUuid = accountId,
+                orgUuid = orgId,
+                displayEmail = email,
+                bootstrapTs = System.currentTimeMillis().toString()
+            )
+            
+            analyticsTracker.identify(accountId, orgId, email, null)
+            _uiState.value = _uiState.value.copy(isAuthenticated = true)
+            _events.emit(LoginEvent.AuthenticationSuccess(accountId, orgId))
+        } else if (authState is VerifyResponse.AuthenticationState.MagicLink) {
+            val config = authState.fallback_code_configuration
+            val sentConfig = MagicLinkSentConfig(
+                email = authState.email_ZiuLfiY ?: "",
+                codeLength = config?.length,
+                codeCharset = config?.charset,
+                showInputAfterDelay = config?.show_input_after_delay
+            )
+            _uiState.value = _uiState.value.copy(magicLinkSent = true)
+            _events.emit(LoginEvent.MagicLinkSent(sentConfig))
+        } else {
+            _uiState.value = _uiState.value.copy(error = "Authentication failed")
         }
     }
 
