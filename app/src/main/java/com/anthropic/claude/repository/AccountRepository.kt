@@ -8,6 +8,7 @@ import com.anthropic.claude.networking.ApiResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.json.Json
 
 /**
  * Repository for account and organization data.
@@ -16,33 +17,49 @@ import kotlinx.coroutines.flow.asStateFlow
 class AccountRepository(
     private val apiClient: AnthropicApiClient,
 ) {
+    private val json = Json { ignoreUnknownKeys = true }
+
     private val _account = MutableStateFlow<Account?>(null)
     val account: StateFlow<Account?> = _account.asStateFlow()
 
     private val _organization = MutableStateFlow<Organization?>(null)
     val organization: StateFlow<Organization?> = _organization.asStateFlow()
 
-    suspend fun refreshAccount(): ApiResult<Account> {
-        // TODO: val result = apiClient.getAccount()
-        // if (result is ApiResult.Success) _account.value = result.data
-        // return result
-        return ApiResult.Error(501, "Not implemented")
+    suspend fun refreshAccount(): ApiResult<Account> = execute {
+        val response = apiClient.getAccount()
+        response to response.body?.string()
+    } { body ->
+        val account = json.decodeFromString<Account>(body)
+        _account.value = account
+        account
     }
 
-    suspend fun updateAccount(request: UpdateAccountRequest): ApiResult<Account> {
-        // TODO: val result = apiClient.updateAccount(request)
-        // if (result is ApiResult.Success) _account.value = result.data
-        return ApiResult.Error(501, "Not implemented")
-    }
-
-    suspend fun refreshOrganization(orgId: String): ApiResult<Organization> {
-        // TODO: val result = apiClient.getOrganization(orgId)
-        // if (result is ApiResult.Success) _organization.value = result.data
-        return ApiResult.Error(501, "Not implemented")
+    suspend fun updateAccount(request: UpdateAccountRequest): ApiResult<Account> = execute {
+        val response = apiClient.updateAccount(request)
+        response to response.body?.string()
+    } { body ->
+        val account = json.decodeFromString<Account>(body)
+        _account.value = account
+        account
     }
 
     fun clearSession() {
         _account.value = null
         _organization.value = null
+    }
+
+    private suspend inline fun <reified T> execute(
+        crossinline call: suspend () -> Pair<okhttp3.Response, String?>,
+        crossinline map: (String) -> T,
+    ): ApiResult<T> = try {
+        val (response, body) = call()
+        val bodyStr = body ?: ""
+        if (response.isSuccessful) {
+            ApiResult.Success(map(bodyStr))
+        } else {
+            ApiResult.Error(response.code, bodyStr.takeIf { it.isNotBlank() })
+        }
+    } catch (e: Exception) {
+        ApiResult.NetworkError
     }
 }
