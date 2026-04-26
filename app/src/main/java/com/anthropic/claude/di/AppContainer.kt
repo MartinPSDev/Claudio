@@ -1,6 +1,7 @@
 package com.anthropic.claude.di
 
 import android.content.Context
+import androidx.room.Room
 import com.anthropic.claude.datastore.DraftDataStore
 import com.anthropic.claude.datastore.GrowthBookDataStore
 import com.anthropic.claude.datastore.SessionDataStore
@@ -9,6 +10,8 @@ import com.anthropic.claude.db.ClaudeRoomDatabase
 import com.anthropic.claude.db.dao.ConversationDao
 import com.anthropic.claude.db.dao.MessageDao
 import com.anthropic.claude.db.dao.ProjectDao
+import com.anthropic.claude.login.ManagedLoginProvider
+import com.anthropic.claude.login.repository.LoginRepositoryImpl
 import com.anthropic.claude.networking.AnthropicApiClient
 import com.anthropic.claude.networking.NetworkingModule
 import com.anthropic.claude.repository.AccountRepository
@@ -18,7 +21,6 @@ import com.anthropic.claude.repository.McpRepository
 import com.anthropic.claude.repository.MessageRepository
 import com.anthropic.claude.repository.ProjectRepository
 import com.anthropic.claude.repository.SessionRepository
-import androidx.room.Room
 
 /**
  * Manual DI container — provides singletons for the entire application.
@@ -47,6 +49,16 @@ class AppContainer(context: Context) {
             context = context,
             onAuthExpired = { sessionRepository.onAuthExpired() },
         )
+    }
+
+    // ── Login ─────────────────────────────────────────────────────────────────
+
+    val managedLoginProvider: ManagedLoginProvider by lazy {
+        ManagedLoginProvider { true }
+    }
+
+    val loginRepository: LoginRepositoryImpl by lazy {
+        LoginRepositoryImpl(apiClient)
     }
 
     // ── Repositories ──────────────────────────────────────────────────────────

@@ -1,13 +1,12 @@
 package com.anthropic.claude.repository
 
 import com.anthropic.claude.api.account.Account
-import com.anthropic.claude.api.sync.AuthStatus
-import com.anthropic.claude.api.sync.FinishAuthRequest
+import com.anthropic.claude.api.result.ApiResult
 import com.anthropic.claude.networking.AnthropicApiClient
-import com.anthropic.claude.networking.ApiResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.json.Json
 
 /** Authentication session states. */
 sealed interface SessionState {
@@ -24,26 +23,38 @@ sealed interface SessionState {
 class SessionRepository(
     private val apiClient: AnthropicApiClient,
 ) {
+    private val json = Json { ignoreUnknownKeys = true }
+
     private val _sessionState = MutableStateFlow<SessionState>(SessionState.Loading)
     val sessionState: StateFlow<SessionState> = _sessionState.asStateFlow()
 
-    /** Bootstrap — validate existing session cookie against the server. */
+    /**
+     * Validates the existing session cookie against /api/account.
+     * Called at app launch to determine if the user is already authenticated.
+     */
     suspend fun bootstrap(): ApiResult<Account> {
-        // TODO: apiClient.bootstrapSession()
-        //   on success → _sessionState.value = SessionState.LoggedIn(account)
-        //   on 401     → _sessionState.value = SessionState.LoggedOut
-        return ApiResult.Error(501, "Not implemented")
+        return try {
+            val response = apiClient.getAccount()
+            val bodyString = response.body?.string() ?: ""
+            if (response.isSuccessful) {
+                val account = json.decodeFromString<Account>(bodyString)
+                _sessionState.value = SessionState.LoggedIn(account)
+                ApiResult.Success(account)
+            } else if (response.code == 401 || response.code == 403) {
+                _sessionState.value = SessionState.LoggedOut
+                ApiResult.Error(response.code, "Session expired")
+            } else {
+                ApiResult.Error(response.code, bodyString.takeIf { it.isNotBlank() })
+            }
+        } catch (e: Exception) {
+            _sessionState.value = SessionState.LoggedOut
+            ApiResult.NetworkError(e)
+        }
     }
 
-    /** Called by AuthExpiredInterceptor when a 401 is received. */
+    /** Called by AuthExpiredInterceptor when a 401 is received mid-session. */
     fun onAuthExpired() {
         _sessionState.value = SessionState.AuthExpired
-    }
-
-    /** Finish SSO auth handshake after receiving the callback intent. */
-    suspend fun finishSsoAuth(request: FinishAuthRequest): ApiResult<Account> {
-        // TODO: apiClient.finishAuth(request) → if success bootstrap
-        return ApiResult.Error(501, "Not implemented")
     }
 
     /** Called after magic-link / Google verification succeeds. */
@@ -51,9 +62,16 @@ class SessionRepository(
         _sessionState.value = SessionState.LoggedIn(account)
     }
 
-    fun logout() {
-        _sessionState.value = SessionState.LoggedOut
-        // TODO: clear cookies via CookieJar
+    suspend fun logout(): ApiResult<Unit> {
+        return try {
+            val response = apiClient.logout()
+            _sessionState.value = SessionState.LoggedOut
+            if (response.isSuccessful) ApiResult.Success(Unit)
+            else ApiResult.Error(response.code, null)
+        } catch (e: Exception) {
+            _sessionState.value = SessionState.LoggedOut
+            ApiResult.NetworkError(e)
+        }
     }
 
     fun currentAccount(): Account? =
