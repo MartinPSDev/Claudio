@@ -25,6 +25,20 @@ android {
             localProperties.load(localPropertiesFile.inputStream())
         }
         manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY", "")
+
+        // ── Secrets injected via BuildConfig ──────────────────────────────────
+        // Set these in local.properties (dev) or CI env vars (prod builds).
+        fun secret(key: String): String =
+            localProperties.getProperty(key) ?: System.getenv(key) ?: ""
+
+        buildConfigField("String", "SENTRY_DSN",
+            "\"${secret("SENTRY_DSN")}\"")
+        buildConfigField("String", "GOOGLE_CLIENT_ID_PROD",
+            "\"${secret("GOOGLE_CLIENT_ID_PROD")}\"")
+        buildConfigField("String", "GOOGLE_CLIENT_ID_STAGING",
+            "\"${secret("GOOGLE_CLIENT_ID_STAGING")}\"")
+        buildConfigField("String", "SEGMENT_WRITE_KEY",
+            "\"${secret("SEGMENT_WRITE_KEY")}\"")
     }
 
     buildTypes {

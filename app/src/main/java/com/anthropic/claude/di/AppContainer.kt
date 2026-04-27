@@ -2,6 +2,11 @@ package com.anthropic.claude.di
 
 import android.content.Context
 import androidx.room.Room
+import com.anthropic.claude.app.notifications.NotificationChannels
+import com.anthropic.claude.app.trusteddevice.TrustedDeviceEnrollmentRepository
+import com.anthropic.claude.app.trusteddevice.TrustedDeviceEnrollmentViewModel
+import com.anthropic.claude.app.trusteddevice.TrustedDeviceStore
+import com.anthropic.claude.core.telemetry.SentryBeforeSendFilter
 import com.anthropic.claude.datastore.DraftDataStore
 import com.anthropic.claude.datastore.GrowthBookDataStore
 import com.anthropic.claude.datastore.SessionDataStore
@@ -21,6 +26,8 @@ import com.anthropic.claude.repository.McpRepository
 import com.anthropic.claude.repository.MessageRepository
 import com.anthropic.claude.repository.ProjectRepository
 import com.anthropic.claude.repository.SessionRepository
+import com.anthropic.claude.settings.InternalPreferencesStore
+import com.anthropic.claude.settings.LatestSeenMessagesStore
 
 /**
  * Manual DI container — provides singletons for the entire application.
@@ -28,11 +35,13 @@ import com.anthropic.claude.repository.SessionRepository
  */
 class AppContainer(context: Context) {
 
+    private val appContext: Context = context.applicationContext
+
     // ── Database ─────────────────────────────────────────────────────────────
 
     val database: ClaudeRoomDatabase by lazy {
         Room.databaseBuilder(
-            context.applicationContext,
+            appContext,
             ClaudeRoomDatabase::class.java,
             ClaudeRoomDatabase.DATABASE_NAME,
         ).fallbackToDestructiveMigration().build()
@@ -42,11 +51,21 @@ class AppContainer(context: Context) {
     val messageDao: MessageDao           get() = database.messageDao()
     val projectDao: ProjectDao           get() = database.projectDao()
 
+    // ── Preferences / Settings ────────────────────────────────────────────────
+
+    val internalPreferencesStore: InternalPreferencesStore by lazy {
+        InternalPreferencesStore.from(appContext)
+    }
+
+    val latestSeenMessagesStore: LatestSeenMessagesStore by lazy {
+        LatestSeenMessagesStore.from(appContext)
+    }
+
     // ── Networking ────────────────────────────────────────────────────────────
 
     val apiClient: AnthropicApiClient by lazy {
         NetworkingModule.provideApiClient(
-            context = context,
+            context = appContext,
             onAuthExpired = { sessionRepository.onAuthExpired() },
         )
     }
@@ -91,21 +110,38 @@ class AppContainer(context: Context) {
         ExperienceRepository(apiClient)
     }
 
+    // ── Trusted Device ────────────────────────────────────────────────────────
+
+    val trustedDeviceStore: TrustedDeviceStore by lazy {
+        TrustedDeviceStore.from(appContext)
+    }
+
+    val trustedDeviceEnrollmentRepository: TrustedDeviceEnrollmentRepository by lazy {
+        TrustedDeviceEnrollmentRepository(apiClient)
+    }
+
+    // ── Telemetry ─────────────────────────────────────────────────────────────
+
+    val sentryBeforeSendFilter: SentryBeforeSendFilter by lazy {
+        SentryBeforeSendFilter(internalPreferencesStore)
+    }
+
     // ── DataStore ─────────────────────────────────────────────────────────────
 
     val userPreferencesDataStore: UserPreferencesDataStore by lazy {
-        UserPreferencesDataStore(context.applicationContext)
+        UserPreferencesDataStore(appContext)
     }
 
     val sessionDataStore: SessionDataStore by lazy {
-        SessionDataStore(context.applicationContext)
+        SessionDataStore(appContext)
     }
 
     val growthBookDataStore: GrowthBookDataStore by lazy {
-        GrowthBookDataStore(context.applicationContext)
+        GrowthBookDataStore(appContext)
     }
 
     val draftDataStore: DraftDataStore by lazy {
-        DraftDataStore(context.applicationContext)
+        DraftDataStore(appContext)
     }
 }
+

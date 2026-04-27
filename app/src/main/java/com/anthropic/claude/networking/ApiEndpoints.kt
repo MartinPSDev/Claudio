@@ -109,4 +109,7 @@ object ApiEndpoints {
     const val EXPERIENCES                = "/api/experiences"
     const val ORG_EXPERIENCES            = "/api/organizations/{org}/experiences"
     const val ORG_EXPERIENCES_TRACK      = "/api/organizations/{org}/experiences/track"
+
+    // ── Trusted Device ───────────────────────────────────────────────────────
+    const val TRUSTED_DEVICES            = "/api/auth/trusted_devices"
 }
