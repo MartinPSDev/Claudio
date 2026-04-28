@@ -16,7 +16,7 @@ class InternalPreferencesStore(
     companion object {
         const val PREFS_NAME = "internal_preferences"
 
-        // Keys extracted from ib0.smali constructor string constants
+        // Preference keys
         const val KEY_MAGIC_LINK_PENDING      = "app_magic_link_pending_login"
         const val KEY_IS_ANT                  = "is_ant"
         const val KEY_API_BASE_URL            = "api_base_url"

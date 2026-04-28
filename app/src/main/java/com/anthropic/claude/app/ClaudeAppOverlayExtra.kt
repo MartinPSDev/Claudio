@@ -1,7 +1,7 @@
 package com.anthropic.claude.app
 
 /**
- * Additional app-level overlays extracted from ClaudeAppOverlay$* smali subclasses.
+ * Additional app-level overlay types for navigation state.
  */
 sealed interface ClaudeAppOverlayExtra {
     /** No overlay shown. */

@@ -10,8 +10,6 @@ import java.util.concurrent.TimeUnit
  * Manages FCM topic subscribe/unsubscribe operations with exponential
  * backoff retry on transient errors (SERVICE_NOT_AVAILABLE,
  * INTERNAL_SERVER_ERROR, TOO_MANY_SUBSCRIBERS).
- *
- * Derived from o4f.smali — the FirebaseMessaging topic manager.
  */
 class FcmTopicManager(
     private val firebaseMessaging: FirebaseMessaging,

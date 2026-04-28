@@ -1,7 +1,7 @@
 package com.anthropic.claude.db
 
 /**
- * Stub for the Room database — entity table names extracted from ClaudeDatabase_Impl smali.
+ * Table name constants for the Room database.
  * Full Room implementation would require @Database + @Dao annotations.
  */
 object ClaudeDatabase {

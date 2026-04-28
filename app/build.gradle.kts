@@ -39,6 +39,10 @@ android {
             "\"${secret("GOOGLE_CLIENT_ID_STAGING")}\"")
         buildConfigField("String", "SEGMENT_WRITE_KEY",
             "\"${secret("SEGMENT_WRITE_KEY")}\"")
+        buildConfigField("String", "DATADOG_CLIENT_TOKEN",
+            "\"${secret("DATADOG_CLIENT_TOKEN")}\"")
+        buildConfigField("String", "DATADOG_APP_ID",
+            "\"${secret("DATADOG_APP_ID")}\"")
     }
 
     buildTypes {

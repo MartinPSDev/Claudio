@@ -1,7 +1,7 @@
 package com.anthropic.claude.login
 
 /**
- * Extended login-screen navigation variants extracted from LoginScreens$* smali subclasses.
+ * Extended login-screen navigation variants.
  */
 sealed interface LoginScreensFull {
     /** Initial welcome/landing screen. May appear after an API auth error. */

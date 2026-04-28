@@ -15,8 +15,6 @@ import com.anthropic.claude.networking.AnthropicApiClient
  * On success, fires [PushEvents.PushRegistrationSuccess]. On failure,
  * fires [PushEvents.PushRegistrationFailure] with the appropriate
  * [PushEvents.FailureCause] (FCM_TOKEN_ERROR, NETWORK_ERROR).
- *
- * Derived from mob.smali — the coroutine-based push registration flow.
  */
 class PushNotificationRegistrar(
     private val context: Context,
