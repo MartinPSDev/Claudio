@@ -2,7 +2,7 @@ package com.anthropic.claude.chat.share
 
 /**
  * Navigation destination sealed class for the shared chat modal bottom sheet.
- * Extracted from SharedChatModalBottomSheetDestination smali files.
+ * Extracted from SharedChatModalBottomSheetDestination decompiled code.
  */
 sealed interface SharedChatModalBottomSheetDestination {
 

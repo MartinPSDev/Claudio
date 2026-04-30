@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonElement
 
 /**
  * Messages sent from the Bell (voice/audio) server to the client.
- * Sealed hierarchy from BellApiServerMessage smali files.
+ * Sealed hierarchy from BellApiServerMessage decompiled code.
  */
 sealed interface BellApiServerMessage {
 
@@ -39,7 +39,7 @@ sealed interface BellApiServerMessage {
 
 /**
  * Messages sent from the client to the Bell (voice/audio) server.
- * Sealed hierarchy from BellApiClientMessage smali files.
+ * Sealed hierarchy from BellApiClientMessage decompiled code.
  */
 sealed interface BellApiClientMessage {
 

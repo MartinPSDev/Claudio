@@ -40,7 +40,7 @@ class SentryBeforeSendFilter(
                 put("is_ant", prefs.isAnt.toString())
             }
             // Note: SentryException doesn't expose setData directly in all versions;
-            // this pattern follows the original dpd.smali which sets K (the extras map)
+            // this pattern follows the original the original filter implementation which sets K (the extras map)
             // on the SentryStackFrame-equivalent object.
         }
 

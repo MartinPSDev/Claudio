@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonElement
 
 /**
  * A single search result hit from the Conway message history search.
- * Default role is "main" (extracted from Smali const-string).
+ * Default role is "main" (extracted from constant extraction).
  */
 @Serializable
 data class ConwaySearchHit(

@@ -4,7 +4,7 @@ import com.anthropic.claude.artifact.details.ArtifactFullScreenParams
 
 /**
  * Complete set of dialog variants on the chat screen.
- * All declared as data objects / data classes matching smali subclass names.
+ * All declared as data objects / data classes matching original subclass names.
  */
 sealed interface ChatScreenDialogFull {
     data object Dismissed      : ChatScreenDialogFull

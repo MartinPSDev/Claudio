@@ -2,7 +2,7 @@ package com.anthropic.claude.code.remote.bottomsheet
 
 /**
  * Navigation destinations for the code remote session bottom sheet.
- * Extracted from CodeRemoteBottomSheetDestination smali files.
+ * Extracted from CodeRemoteBottomSheetDestination decompiled code.
  */
 sealed interface CodeRemoteBottomSheetDestination {
 

@@ -2,7 +2,7 @@ package com.anthropic.claude.tool.ui.chat
 
 /**
  * Navigation destinations for the phone call tool UI bottom sheet.
- * Extracted from PhoneCallSheetDestination smali files.
+ * Extracted from PhoneCallSheetDestination decompiled code.
  */
 sealed interface PhoneCallSheetDestination {
 
@@ -17,7 +17,7 @@ sealed interface PhoneCallSheetDestination {
 
 /**
  * Navigation destinations for the form-input tool UI bottom sheet.
- * Extracted from FormSheetDestination smali files.
+ * Extracted from FormSheetDestination decompiled code.
  */
 sealed interface FormSheetDestination {
 

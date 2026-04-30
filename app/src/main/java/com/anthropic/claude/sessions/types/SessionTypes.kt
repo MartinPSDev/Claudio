@@ -9,7 +9,7 @@ import kotlinx.serialization.json.JsonElement
 
 /**
  * Lifecycle status of a Claude session.
- * Exact server values extracted from Smali bytecode.
+ * Exact server values extracted from bytecode.
  */
 @Serializable
 enum class SessionStatus {

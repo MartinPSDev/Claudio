@@ -3,7 +3,7 @@ package com.anthropic.claude.project.menu
 /**
  * Navigation destinations for the project item context menu dialog.
  * Each subtype represents an action the user can take on a project item.
- * Extracted from ProjectItemMenuDialogDestination smali files.
+ * Extracted from ProjectItemMenuDialogDestination decompiled code.
  */
 sealed interface ProjectItemMenuDialogDestination {
 
