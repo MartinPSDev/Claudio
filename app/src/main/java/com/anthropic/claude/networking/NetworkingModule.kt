@@ -22,7 +22,7 @@ object NetworkingModule {
         context: Context,
         baseUrl: String = AnthropicApiClient.BASE_URL_PRODUCTION,
         sessionTokenProvider: () -> String?,
-        deviceIdProvider: () -> String = { UUID.randomUUID().toString() }, // TODO: Inject from datastore
+        deviceIdProvider: () -> String = { UUID.randomUUID().toString() }, // Caller should inject InternalPreferencesStore.getDeviceId()
         onAuthExpired: () -> Unit,
     ): AnthropicApiClient {
         val sessionInterceptor = SessionInterceptor(

@@ -180,8 +180,26 @@ class McpAppApi(
      */
     suspend fun discoverResourceUri(serverId: String, orgId: String, session: McpSession): String? {
         Log.d(TAG, "discoverResourceUri: serverId=$serverId")
-        // TODO: Implement resource discovery via MCP tools/resources endpoint
-        return null
+
+        val rpcRequest = McpJsonRpcRequest(
+            method = "resources/list",
+            id = "discover-${System.currentTimeMillis()}",
+        )
+
+        val result = sendRequest(
+            serverId = serverId,
+            orgId = orgId,
+            session = session,
+            requestBody = json.encodeToString(McpJsonRpcRequest.serializer(), rpcRequest),
+            requestId = rpcRequest.id!!,
+        )
+
+        return result?.jsonObject
+            ?.get("resources")
+            ?.jsonObject
+            ?.get("uri")
+            ?.jsonPrimitive
+            ?.content
     }
 
     // ── Private ──────────────────────────────────────────────────────────────

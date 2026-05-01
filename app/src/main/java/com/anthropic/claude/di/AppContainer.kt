@@ -143,5 +143,11 @@ class AppContainer(context: Context) {
     val draftDataStore: DraftDataStore by lazy {
         DraftDataStore(appContext)
     }
+
+    // ── Feature Flags ─────────────────────────────────────────────────────────
+
+    val featureFlagProvider: com.anthropic.claude.configs.GrowthBookFeatureFlagProvider by lazy {
+        com.anthropic.claude.configs.GrowthBookFeatureFlagProvider(growthBookDataStore)
+    }
 }
 

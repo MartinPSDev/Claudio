@@ -67,12 +67,20 @@ class ClaudeApplication : Application() {
      */
     private fun initNotificationChannels() {
         try {
-            // TODO: Wire real feature flags from GrowthBookDataStore once it's synced
+            val flagProvider = appContainer.featureFlagProvider
             val flags = NotificationChannels.ChannelFlags(
-                isBogosortEnabled = false,
-                isDispatchEnabled = false,
-                isCompletionEnabled = true,
-                isMarketingEnabled = false,
+                isBogosortEnabled = flagProvider.getBoolean(
+                    com.anthropic.claude.configs.GrowthBookFeatureFlagProvider.FLAG_BOGOSORT_ENABLED
+                ),
+                isDispatchEnabled = flagProvider.getBoolean(
+                    com.anthropic.claude.configs.GrowthBookFeatureFlagProvider.FLAG_DISPATCH_ENABLED
+                ),
+                isCompletionEnabled = flagProvider.getBoolean(
+                    com.anthropic.claude.configs.GrowthBookFeatureFlagProvider.FLAG_COMPLETION_ENABLED
+                ),
+                isMarketingEnabled = flagProvider.getBoolean(
+                    com.anthropic.claude.configs.GrowthBookFeatureFlagProvider.FLAG_MARKETING_ENABLED
+                ),
             )
             NotificationChannels.createAll(this, flags)
             Log.i(TAG, "Notification channels registered")
