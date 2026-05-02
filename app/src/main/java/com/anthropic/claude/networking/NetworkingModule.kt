@@ -6,6 +6,11 @@ import java.util.UUID
 
 /**
  * Factory that wires together the OkHttpClient, interceptors, and AnthropicApiClient.
+ *
+ * Interceptor chain order:
+ * 1. [AnthropicHeaderInterceptor] — injects User-Agent, platform headers, device ID, Accept-Language
+ * 2. [SessionInterceptor] — injects sessionKey cookie
+ * 3. [AuthExpiredInterceptor] — handles 401 → logout callback
  */
 object NetworkingModule {
 
@@ -21,18 +26,25 @@ object NetworkingModule {
     fun provideApiClient(
         context: Context,
         baseUrl: String = AnthropicApiClient.BASE_URL_PRODUCTION,
-        sessionTokenProvider: () -> String?,
-        deviceIdProvider: () -> String = { UUID.randomUUID().toString() }, // Caller should inject InternalPreferencesStore.getDeviceId()
+        sessionTokenProvider: () -> String? = { null },
+        deviceIdProvider: () -> String = { UUID.randomUUID().toString() },
         onAuthExpired: () -> Unit,
     ): AnthropicApiClient {
+        val deviceId = deviceIdProvider()
+
+        val headerInterceptor = AnthropicHeaderInterceptor(
+            context = context,
+            deviceId = deviceId,
+        )
         val sessionInterceptor = SessionInterceptor(
             context = context,
             sessionTokenProvider = sessionTokenProvider,
-            deviceIdProvider = deviceIdProvider
+            deviceIdProvider = { deviceId },
         )
         val authExpiredInterceptor = AuthExpiredInterceptor(onAuthExpired)
 
         val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(headerInterceptor)
             .addInterceptor(sessionInterceptor)
             .addInterceptor(authExpiredInterceptor)
             .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
@@ -42,7 +54,8 @@ object NetworkingModule {
 
         return AnthropicApiClient(
             baseUrl = baseUrl,
-            httpClient = okHttpClient
+            httpClient = okHttpClient,
         )
     }
 }
+
