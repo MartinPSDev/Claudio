@@ -149,5 +149,11 @@ class AppContainer(context: Context) {
     val featureFlagProvider: com.anthropic.claude.configs.GrowthBookFeatureFlagProvider by lazy {
         com.anthropic.claude.configs.GrowthBookFeatureFlagProvider(growthBookDataStore)
     }
+
+    // ── Network ───────────────────────────────────────────────────────────────
+
+    val networkConnectivityMonitor: com.anthropic.claude.networking.NetworkConnectivityMonitor by lazy {
+        com.anthropic.claude.networking.NetworkConnectivityMonitor(appContext)
+    }
 }
 
