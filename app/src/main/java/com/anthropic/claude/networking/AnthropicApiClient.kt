@@ -240,6 +240,30 @@ class AnthropicApiClient(
         post(ApiEndpoints.ORG_EXPERIENCES_TRACK.replace("{org}", orgId),
             payload.toRequestBody(JSON_MEDIA_TYPE), orgId)
 
+    // ── Tasks ────────────────────────────────────────────────────────────────
+
+    suspend fun getTasks(orgId: String, cursor: String? = null): Response {
+        val path = ApiEndpoints.TASKS.replace("{org_uuid}", orgId) +
+            (cursor?.let { "?cursor=$it" } ?: "")
+        return get(path, orgId)
+    }
+
+    suspend fun getTask(orgId: String, taskId: String): Response =
+        get(ApiEndpoints.TASK.replace("{org_uuid}", orgId).replace("{task_uuid}", taskId), orgId)
+
+    suspend fun approveTask(orgId: String, taskId: String, body: RequestBody): Response =
+        post(ApiEndpoints.TASK_APPROVE.replace("{org_uuid}", orgId).replace("{task_uuid}", taskId), body, orgId)
+
+    suspend fun cancelTask(orgId: String, taskId: String): Response =
+        post(ApiEndpoints.TASK_STOP.replace("{org_uuid}", orgId).replace("{task_uuid}", taskId),
+            "{}".toRequestBody(JSON_MEDIA_TYPE), orgId)
+
+    suspend fun getTaskEvents(orgId: String, taskId: String): Response =
+        get(ApiEndpoints.TASK_EVENTS.replace("{org_uuid}", orgId).replace("{task_uuid}", taskId), orgId)
+
+    suspend fun sendTaskMessage(orgId: String, taskId: String, body: RequestBody): Response =
+        post(ApiEndpoints.TASK_MESSAGE.replace("{org_uuid}", orgId).replace("{task_uuid}", taskId), body, orgId)
+
     companion object {
         const val BASE_URL_PRODUCTION = "https://claude.ai"
         const val BASE_URL_STAGING    = "https://claude-ai.staging.ant.dev"
