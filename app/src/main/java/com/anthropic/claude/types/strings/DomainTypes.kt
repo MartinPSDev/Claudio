@@ -149,8 +149,6 @@ value class FileId(val value: String) {
 /**
  * Represents a server-provided localized string with English fallback.
  * Used throughout the API for user-facing text that may have translations.
- *
- * Decompiled from: _ServerLocalizedString.smali
  */
 @Serializable
 data class _ServerLocalizedString(
